@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Classical introduction to parallel computing - estimating pi in CUDA &#8212; Bede Documentation  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Profiling" href="../../profiling/index.html" />
+    <link rel="prev" title="Wanderings in CUDA land - Exploring parallel computing with CUDA" href="wanderings-in-CUDALand.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js "></script>
+
+  </head>
+  <body role="document">
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html"><span><img src="../../_static/logo-cmyk.png"></span>
+           </a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../hardware/index.html">Hardware</a></li>
+                <li><a href="../index.html">Software</a></li>
+                <li><a href="../../usage/index.html">Usage</a></li>
+                <li><a href="../../profiling/index.html">Profiling</a></li>
+                <li><a href="../../training/index.html">Training</a></li>
+                <li><a href="../../bug/index.html">User Group</a></li>
+                <li><a href="../../faq/index.html">FAQ</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Contents <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../hardware/index.html">Hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/index.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../profiling/index.html">Profiling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../training/index.html">Useful Training Material</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq/index.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bug/index.html">Bede User Group</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li><a class="reference internal" href="#">Classical introduction to parallel computing - estimating pi in CUDA</a><ul>
+<li><a class="reference internal" href="#an-easy-introduction-to-parallel-computing">An easy introduction to parallel computing</a></li>
+<li><a class="reference internal" href="#moving-onto-faster-but-still-parallel-approximations">Moving onto faster but still parallel approximations</a></li>
+<li><a class="reference internal" href="#follow-up-work">Follow-up work</a></li>
+</ul>
+</li>
+</ul>
+
+  <li>
+    <a href="wanderings-in-CUDALand.html" title="Previous Chapter: Wanderings in CUDA land - Exploring parallel computing with CUDA"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Wanderings in...</span>
+    </a>
+  </li>
+  <li>
+    <a href="../../profiling/index.html" title="Next Chapter: Profiling"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Profiling &raquo;</span>
+    </a>
+  </li>
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
+      
+  <div class="section" id="classical-introduction-to-parallel-computing-estimating-pi-in-cuda">
+<h1>Classical introduction to parallel computing - estimating pi in CUDA<a class="headerlink" href="#classical-introduction-to-parallel-computing-estimating-pi-in-cuda" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="an-easy-introduction-to-parallel-computing">
+<h2>An easy introduction to parallel computing<a class="headerlink" href="#an-easy-introduction-to-parallel-computing" title="Permalink to this headline">¶</a></h2>
+<p>A standard way to introduce the concepts of parallel programming is to look at some of the ways to approximate pi <span class="math">\((\pi)\)</span>. Since CUDA exposes a highlevel of
+parallelism on the GPU, a logical question is how well similar efforts run on a CUDA GPU.</p>
+<p>One approach is to use a form of Monte-Carlo estimation on a quarter of a unit circle. This can be highly parallel, but not efficient.</p>
+<p>The general idea is to generate a large number N of random pairs <span class="math">\((x_i,y_i)\)</span> in [0,1]x[0,1].</p>
+<p>Count the cases M when <span class="math">\(x_i^2 + y_i^2 \le 1\)</span>
+Then <span class="math">\({M \over N} \approx {\pi \over 4}\)</span></p>
+<p>The idea is to generate these N random pairs in parallel.</p>
+<p>Care must be taken to ensure we have parallel random seeds and we need a global sum for M.</p>
+<img alt="../../_images/Unit-circle.jpg" src="../../_images/Unit-circle.jpg" />
+<p>The standard way of generating pseudorandom numbers in CUDA is to use <code class="docutils literal"><span class="pre">curand_init()</span></code> and <code class="docutils literal"><span class="pre">curand_uniform()</span></code> as device functions,
+only callable from within kernel functions.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">Approximation</span> <span class="n">of</span> <span class="n">Pi</span> <span class="n">using</span> <span class="n">a</span> <span class="n">simple</span><span class="p">,</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">optimized</span><span class="p">,</span> <span class="n">CUDA</span> <span class="n">program</span>
+<span class="o">//</span> <span class="n">Copyleft</span> <span class="n">Alessandro</span> <span class="n">Re</span>
+<span class="o">//</span> <span class="n">From</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">gist</span><span class="o">.</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">akiross</span><span class="o">/</span><span class="mf">17e722</span><span class="n">c5bea92bd2c310324eac643df6</span>
+<span class="o">//</span>
+<span class="o">//</span> <span class="n">GCC</span> <span class="mf">6.</span><span class="n">x</span> <span class="ow">not</span> <span class="n">supported</span> <span class="n">by</span> <span class="n">CUDA</span> <span class="mi">8</span><span class="p">,</span> <span class="n">I</span> <span class="n">used</span> <span class="n">compat</span> <span class="n">version</span>
+<span class="o">//</span>
+<span class="o">//</span> <span class="n">nvcc</span> <span class="o">-</span><span class="n">std</span><span class="o">=</span><span class="n">c</span><span class="o">++</span><span class="mi">11</span> <span class="o">-</span><span class="n">ccbin</span><span class="o">=</span><span class="n">gcc5</span> <span class="n">pigreco</span><span class="o">.</span><span class="n">cu</span> <span class="o">-</span><span class="n">c</span>
+<span class="o">//</span> <span class="n">g</span><span class="o">++</span><span class="mi">5</span> <span class="n">pigreco</span><span class="o">.</span><span class="n">o</span> <span class="o">-</span><span class="n">lcudart</span> <span class="o">-</span><span class="n">L</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">cuda</span><span class="o">/</span><span class="n">lib64</span> <span class="o">-</span><span class="n">o</span> <span class="n">pigreco</span>
+<span class="o">//</span>
+<span class="o">//</span> <span class="n">This</span> <span class="n">code</span> <span class="ow">is</span> <span class="n">basically</span> <span class="n">equivalent</span> <span class="n">to</span> <span class="n">the</span> <span class="n">following</span> <span class="n">Python</span> <span class="n">code</span><span class="p">:</span>
+<span class="o">//</span>
+<span class="o">//</span> <span class="k">def</span> <span class="nf">pigreco</span><span class="p">(</span><span class="n">NUM</span><span class="p">):</span>
+<span class="o">//</span>     <span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">random</span> <span class="k">as</span> <span class="n">rand</span>
+<span class="o">//</span>     <span class="k">def</span> <span class="nf">sqrad</span><span class="p">():</span>
+<span class="o">//</span>         <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">rand</span><span class="p">(),</span> <span class="n">rand</span><span class="p">()</span>
+<span class="o">//</span>         <span class="k">return</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="o">*</span><span class="n">y</span>
+<span class="o">//</span>     <span class="k">return</span> <span class="mi">4</span> <span class="o">*</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="n">test</span><span class="p">())</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">NUM</span><span class="p">))</span> <span class="o">/</span> <span class="n">NUM</span>
+<span class="o">//</span>
+<span class="o">//</span> <span class="n">Python</span> <span class="n">version</span> <span class="n">takes</span><span class="p">,</span> <span class="n">on</span> <span class="n">this</span> <span class="n">machine</span><span class="p">,</span> <span class="mf">3.5</span> <span class="n">seconds</span> <span class="n">to</span> <span class="n">compute</span> <span class="mi">10</span><span class="n">M</span> <span class="n">tests</span>
+<span class="o">//</span> <span class="n">CUDA</span> <span class="n">version</span> <span class="n">takes</span><span class="p">,</span> <span class="n">on</span> <span class="n">this</span> <span class="n">machine</span><span class="p">,</span> <span class="mf">1.6</span> <span class="n">seconds</span> <span class="n">to</span> <span class="n">compute</span> <span class="mf">20.48</span><span class="n">G</span> <span class="n">tests</span>
+<span class="o">//</span>
+<span class="c1">#include &lt;stdio.h&gt;</span>
+<span class="c1">#include &lt;iostream&gt;</span>
+<span class="c1">#include &lt;limits&gt;</span>
+<span class="c1">#include &lt;cuda.h&gt;</span>
+<span class="c1">#include &lt;curand_kernel.h&gt;</span>
+
+
+<span class="n">using</span> <span class="n">std</span><span class="p">::</span><span class="n">cout</span><span class="p">;</span>
+<span class="n">using</span> <span class="n">std</span><span class="p">::</span><span class="n">endl</span><span class="p">;</span>
+
+<span class="n">typedef</span> <span class="n">unsigned</span> <span class="n">long</span> <span class="n">long</span> <span class="n">Count</span><span class="p">;</span>
+<span class="n">typedef</span> <span class="n">std</span><span class="p">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span><span class="n">double</span><span class="o">&gt;</span> <span class="n">DblLim</span><span class="p">;</span>
+
+<span class="n">const</span> <span class="n">Count</span> <span class="n">WARP_SIZE</span> <span class="o">=</span> <span class="mi">32</span><span class="p">;</span> <span class="o">//</span> <span class="n">Warp</span> <span class="n">size</span>
+<span class="n">const</span> <span class="n">Count</span> <span class="n">NBLOCKS</span> <span class="o">=</span> <span class="mi">1792</span><span class="p">;</span> <span class="o">//</span> <span class="n">Number</span> <span class="n">of</span> <span class="n">total</span> <span class="n">cuda</span> <span class="n">cores</span> <span class="n">on</span> <span class="n">my</span> <span class="n">GPU</span> 
+			    <span class="o">//</span> <span class="mi">5120</span> <span class="k">for</span> <span class="n">v100</span><span class="p">;</span> <span class="mi">1792</span> <span class="k">for</span> <span class="n">Quadro</span> <span class="n">P4000</span>
+<span class="n">const</span> <span class="n">Count</span> <span class="n">ITERATIONS</span> <span class="o">=</span> <span class="mi">1000000</span><span class="p">;</span> <span class="o">//</span> <span class="n">Number</span> <span class="n">of</span> <span class="n">points</span> <span class="n">to</span> <span class="n">generate</span> <span class="p">(</span><span class="n">each</span> <span class="n">thread</span><span class="p">)</span>
+
+<span class="o">//</span> <span class="n">This</span> <span class="n">kernel</span> <span class="ow">is</span> 
+<span class="n">__global__</span> <span class="n">void</span> <span class="n">picount</span><span class="p">(</span><span class="n">Count</span> <span class="o">*</span><span class="n">totals</span><span class="p">)</span> <span class="p">{</span>
+	<span class="o">//</span> <span class="n">Define</span> <span class="n">some</span> <span class="n">shared</span> <span class="n">memory</span><span class="p">:</span> <span class="nb">all</span> <span class="n">threads</span> <span class="ow">in</span> <span class="n">this</span> <span class="n">block</span>
+	<span class="n">__shared__</span> <span class="n">Count</span> <span class="n">counter</span><span class="p">[</span><span class="n">WARP_SIZE</span><span class="p">];</span>
+
+	<span class="o">//</span> <span class="n">Unique</span> <span class="n">ID</span> <span class="n">of</span> <span class="n">the</span> <span class="n">thread</span>
+	<span class="nb">int</span> <span class="n">tid</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">blockIdx</span><span class="o">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">blockDim</span><span class="o">.</span><span class="n">x</span><span class="p">;</span>
+
+	<span class="o">//</span> <span class="n">Initialize</span> <span class="n">RNG</span>
+	<span class="n">curandState_t</span> <span class="n">rng</span><span class="p">;</span>
+	<span class="n">curand_init</span><span class="p">(</span><span class="n">clock64</span><span class="p">(),</span> <span class="n">tid</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">rng</span><span class="p">);</span>
+
+	<span class="o">//</span> <span class="n">Initialize</span> <span class="n">the</span> <span class="n">counter</span>
+	<span class="n">counter</span><span class="p">[</span><span class="n">threadIdx</span><span class="o">.</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+	<span class="o">//</span> <span class="n">Computation</span> <span class="n">loop</span>
+	<span class="k">for</span> <span class="p">(</span><span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">ITERATIONS</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nb">float</span> <span class="n">x</span> <span class="o">=</span> <span class="n">curand_uniform</span><span class="p">(</span><span class="o">&amp;</span><span class="n">rng</span><span class="p">);</span> <span class="o">//</span> <span class="n">Random</span> <span class="n">x</span> <span class="n">position</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+		<span class="nb">float</span> <span class="n">y</span> <span class="o">=</span> <span class="n">curand_uniform</span><span class="p">(</span><span class="o">&amp;</span><span class="n">rng</span><span class="p">);</span> <span class="o">//</span> <span class="n">Random</span> <span class="n">y</span> <span class="n">position</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+		<span class="n">counter</span><span class="p">[</span><span class="n">threadIdx</span><span class="o">.</span><span class="n">x</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="o">*</span> <span class="n">y</span><span class="p">);</span> <span class="o">//</span> <span class="n">Hit</span> <span class="n">test</span> <span class="o">-</span> <span class="n">I</span> <span class="n">think</span> <span class="n">this</span> <span class="ow">is</span> <span class="n">clever</span><span class="o">-</span> <span class="n">CA</span>
+	<span class="p">}</span>
+
+	<span class="o">//</span> <span class="n">The</span> <span class="n">first</span> <span class="n">thread</span> <span class="ow">in</span> <span class="o">*</span><span class="n">every</span> <span class="n">block</span><span class="o">*</span> <span class="n">should</span> <span class="nb">sum</span> <span class="n">the</span> <span class="n">results</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">threadIdx</span><span class="o">.</span><span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+		<span class="o">//</span> <span class="n">Reset</span> <span class="n">count</span> <span class="k">for</span> <span class="n">this</span> <span class="n">block</span>
+		<span class="n">totals</span><span class="p">[</span><span class="n">blockIdx</span><span class="o">.</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+		<span class="o">//</span> <span class="n">Accumulate</span> <span class="n">results</span>
+		<span class="k">for</span> <span class="p">(</span><span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">WARP_SIZE</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">totals</span><span class="p">[</span><span class="n">blockIdx</span><span class="o">.</span><span class="n">x</span><span class="p">]</span> <span class="o">+=</span> <span class="n">counter</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nb">int</span> <span class="n">main</span><span class="p">(</span><span class="nb">int</span> <span class="n">argc</span><span class="p">,</span> <span class="n">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">struct</span> <span class="n">timespec</span> <span class="n">start</span> <span class="p">,</span> <span class="n">stop</span> <span class="p">;</span> <span class="o">//</span> <span class="n">variables</span> <span class="k">for</span> <span class="n">timing</span>
+	<span class="n">double</span> <span class="n">accum</span> <span class="p">;</span> <span class="o">//</span> <span class="n">elapsed</span> <span class="n">time</span> <span class="n">variable</span>
+	<span class="n">double</span> <span class="n">pi25DT</span><span class="o">=</span><span class="mf">3.141592653589793238462643</span><span class="p">;</span>
+	<span class="n">double</span> <span class="n">estimate</span><span class="p">;</span> 
+	<span class="nb">int</span> <span class="n">numDev</span><span class="p">;</span>
+	<span class="n">cudaGetDeviceCount</span><span class="p">(</span><span class="o">&amp;</span><span class="n">numDev</span><span class="p">);</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">numDev</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;CUDA device missing! Do you need to use optirun?</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+		<span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;Starting simulation with &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">NBLOCKS</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot; blocks, &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">WARP_SIZE</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot; threads, and &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">ITERATIONS</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot; iterations</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+
+	<span class="o">//</span> <span class="n">Allocate</span> <span class="n">host</span> <span class="ow">and</span> <span class="n">device</span> <span class="n">memory</span> <span class="n">to</span> <span class="n">store</span> <span class="n">the</span> <span class="n">counters</span>
+	<span class="n">Count</span> <span class="o">*</span><span class="n">hOut</span><span class="p">,</span> <span class="o">*</span><span class="n">dOut</span><span class="p">;</span>
+	<span class="n">hOut</span> <span class="o">=</span> <span class="n">new</span> <span class="n">Count</span><span class="p">[</span><span class="n">NBLOCKS</span><span class="p">];</span> <span class="o">//</span> <span class="n">Host</span> <span class="n">memory</span>
+	<span class="n">cudaMalloc</span><span class="p">(</span><span class="o">&amp;</span><span class="n">dOut</span><span class="p">,</span> <span class="n">sizeof</span><span class="p">(</span><span class="n">Count</span><span class="p">)</span> <span class="o">*</span> <span class="n">NBLOCKS</span><span class="p">);</span> <span class="o">//</span> <span class="n">Device</span> <span class="n">memory</span>
+	<span class="n">clock_gettime</span> <span class="p">(</span> <span class="n">CLOCK_REALTIME</span> <span class="p">,</span><span class="o">&amp;</span><span class="n">start</span> <span class="p">);</span> <span class="o">//</span> <span class="n">timer</span> <span class="n">start</span>
+	<span class="o">//</span> <span class="n">Launch</span> <span class="n">kernel</span>
+	<span class="n">picount</span><span class="o">&lt;&lt;&lt;</span><span class="n">NBLOCKS</span><span class="p">,</span> <span class="n">WARP_SIZE</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">dOut</span><span class="p">);</span>
+        <span class="n">cudaDeviceSynchronize</span><span class="p">();</span> <span class="o">//</span> <span class="n">Need</span> <span class="n">matrices</span> <span class="n">to</span> <span class="n">be</span> <span class="n">defined</span> <span class="n">before</span> <span class="k">continue</span>
+	<span class="n">clock_gettime</span> <span class="p">(</span> <span class="n">CLOCK_REALTIME</span> <span class="p">,</span><span class="o">&amp;</span><span class="n">stop</span> <span class="p">);</span> <span class="o">//</span> <span class="n">timer</span> <span class="n">stop</span>
+	<span class="o">//</span> <span class="n">Copy</span> <span class="n">back</span> <span class="n">memory</span> <span class="n">used</span> <span class="n">on</span> <span class="n">device</span> <span class="ow">and</span> <span class="n">free</span>
+	<span class="n">cudaMemcpy</span><span class="p">(</span><span class="n">hOut</span><span class="p">,</span> <span class="n">dOut</span><span class="p">,</span> <span class="n">sizeof</span><span class="p">(</span><span class="n">Count</span><span class="p">)</span> <span class="o">*</span> <span class="n">NBLOCKS</span><span class="p">,</span> <span class="n">cudaMemcpyDeviceToHost</span><span class="p">);</span>
+	<span class="n">cudaFree</span><span class="p">(</span><span class="n">dOut</span><span class="p">);</span>
+
+	<span class="o">//</span> <span class="n">Compute</span> <span class="n">total</span> <span class="n">hits</span>
+	<span class="n">Count</span> <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="k">for</span> <span class="p">(</span><span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">NBLOCKS</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">total</span> <span class="o">+=</span> <span class="n">hOut</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+	<span class="p">}</span>
+	<span class="n">Count</span> <span class="n">tests</span> <span class="o">=</span> <span class="n">NBLOCKS</span> <span class="o">*</span> <span class="n">ITERATIONS</span> <span class="o">*</span> <span class="n">WARP_SIZE</span><span class="p">;</span>
+	<span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;Approximated PI using &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">tests</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot; random tests</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+
+	<span class="o">//</span> <span class="n">Set</span> <span class="n">maximum</span> <span class="n">precision</span> <span class="k">for</span> <span class="n">decimal</span> <span class="n">printing</span>
+	<span class="n">cout</span><span class="o">.</span><span class="n">precision</span><span class="p">(</span><span class="n">DblLim</span><span class="p">::</span><span class="n">digits10</span><span class="p">);</span> <span class="o">//</span> <span class="n">Original</span> <span class="n">code</span> <span class="n">failed</span> <span class="k">with</span> <span class="n">max_digits10</span>
+	<span class="n">estimate</span> <span class="o">=</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">double</span><span class="p">)</span><span class="n">total</span><span class="o">/</span><span class="p">(</span><span class="n">double</span><span class="p">)</span><span class="n">tests</span><span class="p">;</span>
+	<span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;PI ~= &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">estimate</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s2">&quot;Pi  error is </span><span class="si">%.16f</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pi25DT</span><span class="o">-</span><span class="n">estimate</span><span class="p">);</span>
+ 	<span class="n">accum</span> <span class="o">=</span><span class="p">(</span> <span class="n">stop</span><span class="o">.</span><span class="n">tv_sec</span> <span class="o">-</span> <span class="n">start</span><span class="o">.</span><span class="n">tv_sec</span> <span class="p">)</span><span class="o">+</span> <span class="o">//</span> <span class="n">elapsed</span> <span class="n">time</span> <span class="n">create</span> <span class="n">A</span>
+	       <span class="p">(</span> <span class="n">stop</span><span class="o">.</span><span class="n">tv_nsec</span> <span class="o">-</span> <span class="n">start</span><span class="o">.</span><span class="n">tv_nsec</span> <span class="p">)</span><span class="o">*</span><span class="mf">1.e-9</span> <span class="p">;</span>	
+ 	<span class="n">printf</span> <span class="p">(</span><span class="s2">&quot;Monte pi took : </span><span class="si">%lf</span><span class="s2"> sec .</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">accum</span> <span class="p">);</span> <span class="o">//</span> <span class="nb">print</span> <span class="n">el</span><span class="o">.</span> <span class="n">time</span>
+
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Local changes to the code were to fix a compilation error, and to add in timings and an error estimate.</p>
+<p>Output from the code on a Quadro P4000 is:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Starting</span> <span class="n">simulation</span> <span class="k">with</span> <span class="mi">1792</span> <span class="n">blocks</span><span class="p">,</span> <span class="mi">32</span> <span class="n">threads</span><span class="p">,</span> <span class="ow">and</span> <span class="mi">1000000</span> <span class="n">iterations</span>
+<span class="n">Approximated</span> <span class="n">PI</span> <span class="n">using</span> <span class="mi">57344000000</span> <span class="n">random</span> <span class="n">tests</span>
+<span class="n">PI</span> <span class="o">~=</span> <span class="mf">3.14159992717634</span>
+<span class="n">Pi</span>  <span class="n">error</span> <span class="ow">is</span> <span class="o">-</span><span class="mf">0.0000072735865460</span>
+<span class="n">Monte</span> <span class="n">pi</span> <span class="n">took</span> <span class="p">:</span> <span class="mf">0.661215</span> <span class="n">sec</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>This is a good deal of work and time for a fairly poor result.</p>
+<p>There is another important aspect about this code. Notice that it limits the size of each thread block to 32 - the size of a thread warp,
+that is the number of tightly coupled and synchronised threads in a unit of computation. CUDA does allows thread blocks to have up to
+1024 blocks. Certainly in this case, there are reasons to suspect little performance gain by increasing the number of threads per block (or
+the number of blocks for that matter), but it should be possible. If we just increase the number of threads per block from 32 to 64, we get
+an interesting and wrong answer:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">montebig</span>
+<span class="n">Starting</span> <span class="n">simulation</span> <span class="k">with</span> <span class="mi">1792</span> <span class="n">blocks</span><span class="p">,</span> <span class="mi">64</span> <span class="n">threads</span><span class="p">,</span> <span class="ow">and</span> <span class="mi">1000000</span> <span class="n">iterations</span>
+<span class="n">Approximated</span> <span class="n">PI</span> <span class="n">using</span> <span class="mi">114688000000</span> <span class="n">random</span> <span class="n">tests</span>
+<span class="n">PI</span> <span class="o">~=</span> <span class="mf">1.57781224898856</span>
+<span class="n">Pi</span>  <span class="n">error</span> <span class="ow">is</span> <span class="mf">1.5637804046012329</span>
+<span class="n">Monte</span> <span class="n">pi</span> <span class="n">took</span> <span class="p">:</span> <span class="mf">1.256798</span> <span class="n">sec</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>The reason for this severe under estimation of the answer is that threads in different warps need to be synchronised before thread[0] in
+each thread group can accumulate the sums. Therefore a <code class="docutils literal"><span class="pre">__syncthreads()</span></code> call is needed before this summation is performed. When that is
+added, we then get:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">montebig</span>
+<span class="n">Starting</span> <span class="n">simulation</span> <span class="k">with</span> <span class="mi">1792</span> <span class="n">blocks</span><span class="p">,</span> <span class="mi">64</span> <span class="n">threads</span><span class="p">,</span> <span class="ow">and</span> <span class="mi">1000000</span> <span class="n">iterations</span>
+<span class="n">Approximated</span> <span class="n">PI</span> <span class="n">using</span> <span class="mi">114688000000</span> <span class="n">random</span> <span class="n">tests</span>
+<span class="n">PI</span> <span class="o">~=</span> <span class="mf">3.14159132240513</span>
+<span class="n">Pi</span>  <span class="n">error</span> <span class="ow">is</span> <span class="mf">0.0000013311846594</span>
+<span class="n">Monte</span> <span class="n">pi</span> <span class="n">took</span> <span class="p">:</span> <span class="mf">1.222475</span> <span class="n">sec</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>Also notice that doubling the number of threads in each thread group roughly doubles the compute time - reinforcing the suggestion that the
+GPU resources are being used fully in the initial configuration.</p>
+</div>
+<div class="section" id="moving-onto-faster-but-still-parallel-approximations">
+<h2>Moving onto faster but still parallel approximations<a class="headerlink" href="#moving-onto-faster-but-still-parallel-approximations" title="Permalink to this headline">¶</a></h2>
+<p>The next stage in an easy to understand parallel approximation of <span class="math">\(\pi\)</span> is to look at numerical quadrature approximations to an integral that also defines
+<span class="math">\(\pi\)</span>.</p>
+<p>The standard formula is:</p>
+<div class="math">
+\[\pi = \int_0^1 {4 \over (1+x^2)} dx\]</div>
+<p>Of course, the integral can be broken into an arbitrary number of pieces. In Python or MATLAB environments running on mutli-core architectures, this is often the most
+effective way to approximate <span class="math">\(\pi\)</span>.  The standard MPI parallel example approximates this integral with the composite mid-point rule.</p>
+<p>This leads to:</p>
+<div class="math">
+\[\pi = {1 \over N} \sum_{i=1}^N {4 \over {1 + \left( {i-0.5}\over N \right)^2 }}\]</div>
+<p>In essence we are doing a parallel sum over the GPU threads. This is possible to do very efficiently and it is one of the Advanced examples in the CUDA samples code, see
+<code class="docutils literal"><span class="pre">$CUDA_HOME/samples/6_Advanced/reduction</span></code> to look at the code. Unfortunately, the code gets fairly complicated, which is why it is in the Advanced section.</p>
+<p>The reason for the complexity is that by design there is no global synchronisation across all threads on the GPU. It is possible to synchronise a pool of threads
+(which can  involve up to 1024 threads), but there is no easy way to synchronise across pools of threads. The simplest, but most inefficient way, is to sychronise
+everything on the device with the CPU using the <code class="docutils literal"><span class="pre">cudaDeviceSynchronize()</span></code> command.</p>
+<p>In order to have code that is reasonably understandable, we work with a single pool of threads - not a silly option for what is actually a small amount of work.</p>
+<p>Borrowing heavily from code provided (with a good overiew) in <a class="reference external" href="https://sodocumentation.net/cuda/topic/6566/parallel-reduction--e-g--how-to-sum-an-array">https://sodocumentation.net/cuda/topic/6566/parallel-reduction&#8211;e-g&#8211;how-to-sum-an-array</a>- we have:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">Modified</span> <span class="kn">from</span> <span class="nn">global</span> <span class="n">reduction</span> <span class="n">code</span> <span class="ow">in</span> 
+<span class="o">//</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">sodocumentation</span><span class="o">.</span><span class="n">net</span><span class="o">/</span><span class="n">cuda</span><span class="o">/</span><span class="n">topic</span><span class="o">/</span><span class="mi">6566</span><span class="o">/</span><span class="n">parallel</span><span class="o">-</span><span class="n">reduction</span><span class="o">--</span><span class="n">e</span><span class="o">-</span><span class="n">g</span><span class="o">--</span><span class="n">how</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="nb">sum</span><span class="o">-</span><span class="n">an</span><span class="o">-</span><span class="n">array</span><span class="o">-</span>
+
+<span class="o">//</span> <span class="n">System</span> <span class="n">includes</span>
+<span class="c1">#include &lt;stdio.h&gt;</span>
+<span class="c1">#include &lt;assert.h&gt;</span>
+<span class="c1">#include &lt;iostream&gt;</span>
+<span class="c1">#include &lt;math.h&gt;</span>
+<span class="o">//</span> <span class="n">CUDA</span> <span class="n">runtime</span>
+<span class="c1">#include &lt;cuda_runtime.h&gt;</span>
+
+<span class="c1">#define BILLION 1000000000L</span>
+ 
+<span class="o">//</span> <span class="n">Note</span> <span class="n">this</span> <span class="n">cannot</span> <span class="n">be</span> <span class="n">executed</span> <span class="n">on</span> <span class="n">the</span> <span class="n">CPU</span> <span class="o">-</span> <span class="n">just</span> <span class="n">on</span> <span class="n">the</span> <span class="n">GPU</span>
+<span class="n">__device__</span> <span class="n">double</span> <span class="n">f</span><span class="p">(</span> <span class="n">double</span> <span class="n">a</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="p">(</span><span class="mf">4.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">a</span><span class="o">*</span><span class="n">a</span><span class="p">));</span>
+<span class="p">}</span>
+
+
+<span class="n">__global__</span> <span class="n">void</span> <span class="n">PiEstSingleBlock</span><span class="p">(</span><span class="n">long</span> <span class="n">N</span><span class="p">,</span> <span class="n">double</span> <span class="o">*</span><span class="n">piest</span><span class="p">)</span> <span class="p">{</span>
+
+
+    <span class="nb">int</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="o">.</span><span class="n">x</span><span class="p">;</span>
+    <span class="nb">int</span> <span class="n">blockSize</span> <span class="o">=</span> <span class="n">blockDim</span><span class="o">.</span><span class="n">x</span><span class="p">;</span> <span class="o">//</span> <span class="n">We</span> <span class="n">are</span> <span class="n">exploiting</span> <span class="n">the</span> <span class="n">fact</span> <span class="n">that</span> <span class="n">there</span> <span class="ow">is</span> <span class="n">just</span> <span class="n">one</span> <span class="n">thread</span> <span class="n">group</span>
+    <span class="n">double</span> <span class="n">h</span><span class="p">;</span>
+    <span class="n">double</span> <span class="nb">sum</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="p">(</span><span class="n">double</span><span class="p">)</span><span class="n">N</span><span class="p">;</span>
+    <span class="o">//</span> <span class="n">Do</span> <span class="n">the</span> <span class="n">parallel</span> <span class="n">partial</span> <span class="n">sums</span> <span class="k">for</span> <span class="n">pi</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">long</span> <span class="n">i</span> <span class="o">=</span> <span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">N</span><span class="p">;</span> <span class="n">i</span> <span class="o">+=</span> <span class="n">blockSize</span><span class="p">)</span>
+        <span class="nb">sum</span> <span class="o">+=</span> <span class="n">f</span><span class="p">(</span><span class="n">h</span> <span class="o">*</span> <span class="p">((</span><span class="n">double</span><span class="p">)</span><span class="n">i</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">));</span>
+    <span class="n">__shared__</span> <span class="n">double</span> <span class="n">p</span><span class="p">[</span><span class="mi">1024</span><span class="p">];</span> <span class="o">//</span> <span class="n">The</span> <span class="n">maximum</span> <span class="n">number</span> <span class="n">of</span> <span class="n">threads</span> <span class="ow">is</span> <span class="mi">1024</span>
+			       <span class="o">//</span> <span class="n">We</span> <span class="n">can</span> <span class="n">make</span> <span class="n">this</span> <span class="n">storage</span> <span class="n">dynamic</span> <span class="ow">in</span> <span class="n">size</span> <span class="n">to</span> <span class="n">paramterise</span>
+			       <span class="o">//</span> <span class="n">over</span> <span class="n">the</span> <span class="n">number</span> <span class="n">of</span> <span class="n">threads</span> <span class="n">used</span><span class="o">.</span> 
+    <span class="o">//</span> <span class="n">Now</span> <span class="n">add</span> <span class="n">the</span> <span class="n">partial</span> <span class="n">sums</span> <span class="n">together</span> 
+    <span class="n">p</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="o">*</span><span class="nb">sum</span><span class="p">;</span>
+    <span class="n">__syncthreads</span><span class="p">();</span>
+    <span class="k">for</span> <span class="p">(</span><span class="nb">int</span> <span class="n">size</span> <span class="o">=</span> <span class="n">blockSize</span><span class="o">/</span><span class="mi">2</span><span class="p">;</span> <span class="n">size</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">;</span> <span class="n">size</span><span class="o">/=</span><span class="mi">2</span><span class="p">)</span> <span class="p">{</span> <span class="o">//</span><span class="n">uniform</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">idx</span><span class="o">&lt;</span><span class="n">size</span><span class="p">)</span>
+            <span class="n">p</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">+=</span> <span class="n">p</span><span class="p">[</span><span class="n">idx</span><span class="o">+</span><span class="n">size</span><span class="p">];</span>
+        <span class="n">__syncthreads</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="o">*</span><span class="n">piest</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="p">}</span>
+
+
+<span class="nb">int</span> <span class="n">main</span><span class="p">(</span><span class="n">void</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">struct</span> <span class="n">timespec</span> <span class="n">start</span> <span class="p">,</span> <span class="n">stop</span> <span class="p">;</span> <span class="o">//</span> <span class="n">variables</span> <span class="k">for</span> <span class="n">timing</span>
+	<span class="n">double</span> <span class="n">accum</span> <span class="p">;</span> <span class="o">//</span> <span class="n">elapsed</span> <span class="n">time</span> <span class="n">variable</span>
+	<span class="n">const</span> <span class="n">unsigned</span> <span class="nb">int</span> <span class="n">blockSize</span><span class="o">=</span><span class="mi">1024</span><span class="p">;</span>
+	<span class="n">dim3</span> <span class="n">numThreads</span><span class="p">;</span>
+	<span class="n">double</span> <span class="n">pi25DT</span><span class="o">=</span><span class="mf">3.141592653589793238462643</span><span class="p">;</span>
+	<span class="n">double</span> <span class="n">x</span><span class="p">;</span>
+	<span class="n">double</span> <span class="o">*</span><span class="n">mypi</span><span class="p">;</span>
+	<span class="n">long</span> <span class="n">N</span> <span class="o">=</span> <span class="mi">1000000</span><span class="p">;</span>
+	
+	<span class="n">double</span> <span class="nb">sum</span><span class="p">,</span> <span class="n">h</span><span class="p">;</span>
+	<span class="n">h</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="p">(</span><span class="n">double</span><span class="p">)</span><span class="n">N</span><span class="p">;</span> <span class="o">//</span> <span class="n">For</span> <span class="n">CPU</span> <span class="n">version</span> <span class="n">of</span> <span class="n">loop</span>
+	
+	<span class="n">numThreads</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">blockSize</span><span class="p">;</span>
+	
+	<span class="n">cudaMallocManaged</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mypi</span><span class="p">,</span> <span class="n">sizeof</span><span class="p">(</span><span class="n">double</span><span class="p">));</span>
+	<span class="n">clock_gettime</span> <span class="p">(</span> <span class="n">CLOCK_REALTIME</span> <span class="p">,</span><span class="o">&amp;</span><span class="n">start</span> <span class="p">);</span>
+	<span class="n">PiEstSingleBlock</span><span class="o">&lt;&lt;&lt;</span><span class="mi">1</span><span class="p">,</span><span class="n">numThreads</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">mypi</span><span class="p">);</span>
+	<span class="n">cudaDeviceSynchronize</span><span class="p">();</span> <span class="o">//</span> <span class="n">Cannot</span> <span class="n">get</span> <span class="n">sensible</span> <span class="n">timing</span> <span class="n">without</span> <span class="n">synchronising</span> <span class="n">host</span> <span class="ow">and</span> <span class="n">device</span>
+	<span class="n">clock_gettime</span> <span class="p">(</span> <span class="n">CLOCK_REALTIME</span> <span class="p">,</span><span class="o">&amp;</span><span class="n">stop</span> <span class="p">);</span>
+	<span class="n">accum</span> <span class="o">=</span><span class="p">(</span> <span class="n">stop</span><span class="o">.</span><span class="n">tv_sec</span> <span class="o">-</span> <span class="n">start</span><span class="o">.</span><span class="n">tv_sec</span> <span class="p">)</span><span class="o">+</span> 
+	       <span class="p">(</span> <span class="n">stop</span><span class="o">.</span><span class="n">tv_nsec</span> <span class="o">-</span> <span class="n">start</span><span class="o">.</span><span class="n">tv_nsec</span> <span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">double</span><span class="p">)</span><span class="n">BILLION</span> <span class="p">;</span>
+	
+	<span class="n">printf</span><span class="p">(</span><span class="s2">&quot;Pi estimate </span><span class="si">%.16f</span><span class="s2"> error is </span><span class="si">%.16f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">mypi</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">pi25DT</span><span class="o">-</span><span class="n">mypi</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s2">&quot;Time to compute mypi is </span><span class="si">%lf</span><span class="s2"> sec.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">accum</span><span class="p">);</span>
+	<span class="n">clock_gettime</span> <span class="p">(</span> <span class="n">CLOCK_REALTIME</span> <span class="p">,</span><span class="o">&amp;</span><span class="n">start</span> <span class="p">);</span>
+	<span class="nb">sum</span>  <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+	<span class="k">for</span> <span class="p">(</span><span class="n">long</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">N</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">){</span>
+	   <span class="n">x</span> <span class="o">=</span> <span class="n">h</span> <span class="o">*</span> <span class="p">((</span><span class="n">double</span><span class="p">)</span><span class="n">i</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">);</span>
+	   <span class="nb">sum</span> <span class="o">+=</span> <span class="mf">4.0</span><span class="o">/</span><span class="p">(</span><span class="mf">1.0</span><span class="o">+</span><span class="n">x</span><span class="o">*</span><span class="n">x</span><span class="p">);</span>
+	<span class="p">}</span>
+	<span class="n">clock_gettime</span> <span class="p">(</span> <span class="n">CLOCK_REALTIME</span> <span class="p">,</span><span class="o">&amp;</span><span class="n">stop</span> <span class="p">);</span>
+	<span class="n">accum</span> <span class="o">=</span><span class="p">(</span> <span class="n">stop</span><span class="o">.</span><span class="n">tv_sec</span> <span class="o">-</span> <span class="n">start</span><span class="o">.</span><span class="n">tv_sec</span> <span class="p">)</span><span class="o">+</span> 
+	       <span class="p">(</span> <span class="n">stop</span><span class="o">.</span><span class="n">tv_nsec</span> <span class="o">-</span> <span class="n">start</span><span class="o">.</span><span class="n">tv_nsec</span> <span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">double</span><span class="p">)</span><span class="n">BILLION</span> <span class="p">;</span>
+	
+	<span class="n">printf</span><span class="p">(</span><span class="s2">&quot;CPU pi is </span><span class="si">%.16f</span><span class="s2">  error is </span><span class="si">%.16f</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">h</span><span class="o">*</span><span class="nb">sum</span><span class="p">,</span><span class="n">pi25DT</span><span class="o">-</span><span class="n">h</span><span class="o">*</span><span class="nb">sum</span><span class="p">);</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s2">&quot;Time to compute CPU pi is </span><span class="si">%lf</span><span class="s2"> sec.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">accum</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The results of this code on a system with a Skylake CPU and a Quadro P4000 is:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Pi</span> <span class="n">estimate</span> <span class="mf">3.1415926535898766</span> <span class="n">error</span> <span class="ow">is</span> <span class="o">-</span><span class="mf">0.0000000000000835</span>
+<span class="n">Time</span> <span class="n">to</span> <span class="n">compute</span> <span class="n">mypi</span> <span class="ow">is</span> <span class="mf">0.004875</span> <span class="n">sec</span><span class="o">.</span>
+<span class="n">CPU</span> <span class="n">pi</span> <span class="ow">is</span> <span class="mf">3.1415926535897643</span>  <span class="n">error</span> <span class="ow">is</span> <span class="mf">0.0000000000000289</span>
+<span class="n">Time</span> <span class="n">to</span> <span class="n">compute</span> <span class="n">CPU</span> <span class="n">pi</span> <span class="ow">is</span> <span class="mf">0.016786</span> <span class="n">sec</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>What is interesting in this case is that the computation on the GPU is faster than on the CPU on a relatively small workload.  Both are considerably faster and more accurate than the Monte Carlo
+approximation.</p>
+<p>The time required for the Monte Carlo approximation is lower on systems with v100 GPUs, but the integral approximation is still faster and more accurate.</p>
+<p>On a system with a v100 and Cascade Lake 5218 (2.30GHz) -  Driver Version: 460.32.03    CUDA Version: 11.2</p>
+<p>Monte Carlo approximation</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">montepi</span>
+<span class="n">Starting</span> <span class="n">simulation</span> <span class="k">with</span> <span class="mi">1792</span> <span class="n">blocks</span><span class="p">,</span> <span class="mi">32</span> <span class="n">threads</span><span class="p">,</span> <span class="ow">and</span> <span class="mi">1000000</span> <span class="n">iterations</span>
+<span class="n">Approximated</span> <span class="n">PI</span> <span class="n">using</span> <span class="mi">57344000000</span> <span class="n">random</span> <span class="n">tests</span>
+<span class="n">PI</span> <span class="o">~=</span> <span class="mf">3.14158569614955</span>
+<span class="n">Pi</span>  <span class="n">error</span> <span class="ow">is</span> <span class="mf">0.0000069574402395</span>
+<span class="n">Monte</span> <span class="n">pi</span> <span class="n">took</span> <span class="p">:</span> <span class="mf">0.156507</span> <span class="n">sec</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>Composite Mid-Point</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">pi</span>
+<span class="n">Pi</span> <span class="n">estimate</span> <span class="mf">3.1415926535898766</span> <span class="n">error</span> <span class="ow">is</span> <span class="o">-</span><span class="mf">0.0000000000000835</span>
+<span class="n">Time</span> <span class="n">to</span> <span class="n">compute</span> <span class="n">mypi</span> <span class="ow">is</span> <span class="mf">0.000984</span> <span class="n">sec</span><span class="o">.</span>
+<span class="n">CPU</span> <span class="n">pi</span> <span class="ow">is</span> <span class="mf">3.1415926535897643</span>  <span class="n">error</span> <span class="ow">is</span> <span class="mf">0.0000000000000289</span>
+<span class="n">Time</span> <span class="n">to</span> <span class="n">compute</span> <span class="n">CPU</span> <span class="n">pi</span> <span class="ow">is</span> <span class="mf">0.035159</span> <span class="n">sec</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>On login2 of Bede - AC922 - v100 with Power 9 (3.8GHz) - Driver Version: 440.95.01    CUDA Version: 10.2</p>
+<p>Monte Carlo approximation</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">montepi</span>
+<span class="n">Starting</span> <span class="n">simulation</span> <span class="k">with</span> <span class="mi">1792</span> <span class="n">blocks</span><span class="p">,</span> <span class="mi">32</span> <span class="n">threads</span><span class="p">,</span> <span class="ow">and</span> <span class="mi">1000000</span> <span class="n">iterations</span>
+<span class="n">Approximated</span> <span class="n">PI</span> <span class="n">using</span> <span class="mi">57344000000</span> <span class="n">random</span> <span class="n">tests</span>
+<span class="n">PI</span> <span class="o">~=</span> <span class="mf">3.14159480113002</span>
+<span class="n">Pi</span>  <span class="n">error</span> <span class="ow">is</span> <span class="o">-</span><span class="mf">0.0000021475402292</span>
+<span class="n">Monte</span> <span class="n">pi</span> <span class="n">took</span> <span class="p">:</span> <span class="mf">0.165825</span> <span class="n">sec</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>Composite Mid-Point</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">pi</span>
+<span class="n">Pi</span> <span class="n">estimate</span> <span class="mf">3.1415926535898766</span> <span class="n">error</span> <span class="ow">is</span> <span class="o">-</span><span class="mf">0.0000000000000835</span>
+<span class="n">Time</span> <span class="n">to</span> <span class="n">compute</span> <span class="n">mypi</span> <span class="ow">is</span> <span class="mf">0.000507</span> <span class="n">sec</span><span class="o">.</span>
+<span class="n">CPU</span> <span class="n">pi</span> <span class="ow">is</span> <span class="mf">3.1415926535897643</span>  <span class="n">error</span> <span class="ow">is</span> <span class="mf">0.0000000000000289</span>
+<span class="n">Time</span> <span class="n">to</span> <span class="n">compute</span> <span class="n">CPU</span> <span class="n">pi</span> <span class="ow">is</span> <span class="mf">0.006880</span> <span class="n">sec</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>Notice that the Monte Carlo approximation can  use all of the v100 CUDA cores, but the results show this modest change has little
+influence on accuracy - suggesting that the Monte Carlo simulation is only converging slowly.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">montepi2</span>
+<span class="n">Starting</span> <span class="n">simulation</span> <span class="k">with</span> <span class="mi">5120</span> <span class="n">blocks</span><span class="p">,</span> <span class="mi">32</span> <span class="n">threads</span><span class="p">,</span> <span class="ow">and</span> <span class="mi">1000000</span> <span class="n">iterations</span>
+<span class="n">Approximated</span> <span class="n">PI</span> <span class="n">using</span> <span class="mi">163840000000</span> <span class="n">random</span> <span class="n">tests</span>
+<span class="n">PI</span> <span class="o">~=</span> <span class="mf">3.14159536311035</span>
+<span class="n">Pi</span>  <span class="n">error</span> <span class="ow">is</span> <span class="o">-</span><span class="mf">0.0000027095205586</span>
+<span class="n">Monte</span> <span class="n">pi</span> <span class="n">took</span> <span class="p">:</span> <span class="mf">0.400903</span> <span class="n">sec</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>Increasing the number of iterations per thread by an order of magnitude yields:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">montepi2</span>
+<span class="n">Starting</span> <span class="n">simulation</span> <span class="k">with</span> <span class="mi">5120</span> <span class="n">blocks</span><span class="p">,</span> <span class="mi">32</span> <span class="n">threads</span><span class="p">,</span> <span class="ow">and</span> <span class="mi">10000000</span> <span class="n">iterations</span>
+<span class="n">Approximated</span> <span class="n">PI</span> <span class="n">using</span> <span class="mi">1638400000000</span> <span class="n">random</span> <span class="n">tests</span>
+<span class="n">PI</span> <span class="o">~=</span> <span class="mf">3.14159246824707</span>
+<span class="n">Pi</span>  <span class="n">error</span> <span class="ow">is</span> <span class="mf">0.0000001853427229</span>
+<span class="n">Monte</span> <span class="n">pi</span> <span class="n">took</span> <span class="p">:</span> <span class="mf">3.407919</span> <span class="n">sec</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>This change appears to have improved accuracy and the cost has gone up 8.5 (rather than 10), so this may be the better approach to get a
+more accurate solution, but it is considerably slower than the composite mid-point rules and is really only appropriate for demonstration
+purposes.</p>
+</div>
+<div class="section" id="follow-up-work">
+<h2>Follow-up work<a class="headerlink" href="#follow-up-work" title="Permalink to this headline">¶</a></h2>
+<p>It would be sensible to have OpenACC and OpenMP versions of the compostite mid-point rule example to show the relative ease with which GPU parallelism
+can be expressed in these higher level environments. The basic loop involved in each case is trivial.</p>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+  <div data-ea-publisher>
+  </div>
+  
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../../_sources/software/wanderings/Estimating-pi-in-CUDALand.rst.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2020, N8 CIR.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.<br/>
+    </p>
+  </div>
+</footer>
+
+  </body>
+</html>

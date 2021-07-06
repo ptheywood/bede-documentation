@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Usage &#8212; Bede Documentation  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Software" href="../software/index.html" />
+    <link rel="prev" title="Hardware" href="../hardware/index.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+  </head>
+  <body role="document">
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html"><span><img src="../_static/logo-cmyk.png"></span>
+           </a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../hardware/index.html">Hardware</a></li>
+                <li><a href="../software/index.html">Software</a></li>
+                <li><a href="#">Usage</a></li>
+                <li><a href="../profiling/index.html">Profiling</a></li>
+                <li><a href="../training/index.html">Training</a></li>
+                <li><a href="../bug/index.html">User Group</a></li>
+                <li><a href="../faq/index.html">FAQ</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Contents <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../hardware/index.html">Hardware</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../software/index.html">Software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../profiling/index.html">Profiling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../training/index.html">Useful Training Material</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bug/index.html">Bede User Group</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li><a class="reference internal" href="#">Usage</a><ul>
+<li><a class="reference internal" href="#registering">Registering</a></li>
+<li><a class="reference internal" href="#login">Login</a></li>
+<li><a class="reference internal" href="#acknowledging-bede">Acknowledging Bede</a></li>
+<li><a class="reference internal" href="#file-storage">File Storage</a></li>
+<li><a class="reference internal" href="#running-jobs">Running Jobs</a><ul>
+<li><a class="reference internal" href="#requesting-resources">Requesting resources</a><ul>
+<li><a class="reference internal" href="#part-of-or-an-entire-node">Part of, or an entire node</a></li>
+<li><a class="reference internal" href="#multiple-nodes-mpi">Multiple nodes (MPI)</a></li>
+<li><a class="reference internal" href="#multiple-nodes-ibm-powerai-ddl">Multiple nodes (IBM PowerAI DDL)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <li>
+    <a href="../hardware/index.html" title="Previous Chapter: Hardware"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Hardware</span>
+    </a>
+  </li>
+  <li>
+    <a href="../software/index.html" title="Next Chapter: Software"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Software &raquo;</span>
+    </a>
+  </li>
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
+      
+  <div class="section" id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<p>Bede is running Red Hat Enterprise Linux 7 and access to its
+computational resources is mediated by the Slurm batch scheduler.</p>
+<div class="section" id="registering">
+<h2>Registering<a class="headerlink" href="#registering" title="Permalink to this headline">¶</a></h2>
+<p>Access to the machine is based around projects:</p>
+<ul class="simple">
+<li>For information on how to register a new project, please see <a class="reference external" href="https://n8cir.org.uk/supporting-research/facilities/bede/docs/bede_registrations/">https://n8cir.org.uk/supporting-research/facilities/bede/docs/bede_registrations/</a></li>
+<li>To create an account to use the system:<ul>
+<li>Identify an existing project, or register a new one.</li>
+<li>Create an EPCC SAFE account and login to the SAFE system at:
+<a class="reference external" href="https://safe.epcc.ed.ac.uk/">https://safe.epcc.ed.ac.uk/</a></li>
+<li>Once there, select “Project-&gt;Request access” from the web
+interface and then register against your project</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="login">
+<h2>Login<a class="headerlink" href="#login" title="Permalink to this headline">¶</a></h2>
+<p>Bede offers an SSH service running on host <code class="docutils literal"><span class="pre">bede.dur.ac.uk</span></code> (which
+fronts the two login nodes, <code class="docutils literal"><span class="pre">login1.bede.dur.ac.uk</span></code> and
+<code class="docutils literal"><span class="pre">login2.bede.dur.ac.uk</span></code>). SSH should be used for all interaction with
+the machine (including shell access and file transfer).</p>
+<p>The login nodes are shared between all users of the service and
+therefore should only be used for light interactive work, for example:
+downloading and compiling software, editing files, preparing jobs and
+examining job output. Short test runs using their CPUs and GPUs are also
+acceptable.</p>
+<p>Most of the computational power of the system is accessed through the
+batch scheduler, and so demanding applications should be submitted to it
+(see “Running Jobs”).</p>
+</div>
+<div class="section" id="acknowledging-bede">
+<h2>Acknowledging Bede<a class="headerlink" href="#acknowledging-bede" title="Permalink to this headline">¶</a></h2>
+<p>All work that makes use of the Bede should properly acknowledge the facility
+wherever the work is presented.</p>
+<p>We provide the following acknowledgement text, and strongly encourage its use:</p>
+<p><em>&#8220;This work made use of the facilities of the N8 Centre of Excellence in
+Computationally Intensive Research (N8 CIR) provided and funded by the N8
+research partnership and EPSRC (Grant No. EP/T022167/1). The Centre is
+co-ordinated by the Universities of Durham, Manchester and York.&#8221;</em></p>
+<p>Acknowledgement of Bede provides data that can be used to assess the facility&#8217;s
+success and influences future funding decisions, so please ensure that you are
+acknowledging where appropriate.</p>
+</div>
+<div class="section" id="file-storage">
+<h2>File Storage<a class="headerlink" href="#file-storage" title="Permalink to this headline">¶</a></h2>
+<p>Each project has access to the following shared storage:</p>
+<ul class="simple">
+<li>Project home directory (<code class="docutils literal"><span class="pre">/projects/&lt;project&gt;</span></code>)<ul>
+<li>Intended for project files to be backed up (note: backups not
+currently in place)</li>
+<li>Modest performance</li>
+<li>A default quota of 20GB</li>
+</ul>
+</li>
+<li>Project Lustre directory (<code class="docutils literal"><span class="pre">/nobackup/projects/&lt;project&gt;</span></code>)<ul>
+<li>Intended for bulk project files not requiring backup</li>
+<li>Fast performance</li>
+<li>No quota limitations</li>
+</ul>
+</li>
+</ul>
+<p>By default, files created within a project area are readable and
+writable by all other members of that project.</p>
+<p>In addition, each user has:</p>
+<ul class="simple">
+<li>Home directory (<code class="docutils literal"><span class="pre">/users/&lt;user&gt;</span></code>)<ul>
+<li>Intended for per-user configuration files.</li>
+<li>Modest performance</li>
+<li>A default quota of 20GB</li>
+</ul>
+</li>
+</ul>
+<p>Please note that, as access to Bede is driven by project use, no
+personal data should be stored on the system.</p>
+<p>Current utilisation and limits of a user’s home directory can be found
+by running the <code class="docutils literal"><span class="pre">quota</span></code> command. Similar information can be found for the
+project home directory using the <code class="docutils literal"><span class="pre">df</span> <span class="pre">-h</span> <span class="pre">/projects/&lt;project&gt;</span></code> command.</p>
+<p>To examine how much space is occupied by a project&#8217;s Lustre directory,
+a command of the form <code class="docutils literal"><span class="pre">du</span> <span class="pre">-csh</span> <span class="pre">/nobackup/projects/&lt;project&gt;</span></code> is
+required. As <code class="docutils literal"><span class="pre">du</span></code> will check each and every file under the specified
+directory, this may take a long time to complete. We plan to develop
+the service and provide this information in a more responsive format in
+the future.</p>
+</div>
+<div class="section" id="running-jobs">
+<h2>Running Jobs<a class="headerlink" href="#running-jobs" title="Permalink to this headline">¶</a></h2>
+<p>Access beyond the two login node systems should only be done through the
+Slurm batch scheduler, by packaging your work into units called jobs.</p>
+<p>A job consists of a shell script, called a job submission script,
+containing the commands that the job will run in sequence. In addition,
+some specially formatted comment lines are added to the file, describing
+how much time and resources the job needs.</p>
+<p>Resources are requested in terms of the type of node, the number of GPUs
+per node (for each GPU requested, the job receives 25% of the node’s
+CPUs and RAM) and the number of nodes required.</p>
+<p>There are a number of example job submission scripts below.</p>
+<div class="section" id="requesting-resources">
+<h3>Requesting resources<a class="headerlink" href="#requesting-resources" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="part-of-or-an-entire-node">
+<h4>Part of, or an entire node<a class="headerlink" href="#part-of-or-an-entire-node" title="Permalink to this headline">¶</a></h4>
+<p>Example job script for programs written to take advantage of a GPU or
+multiple GPUs on a single computer:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+
+<span class="c1"># Generic options:</span>
+
+<span class="c1">#SBATCH --account=&lt;project&gt;  # Run job under project &lt;project&gt;</span>
+<span class="c1">#SBATCH --time=1:0:0         # Run for a max of 1 hour</span>
+
+<span class="c1"># Node resources:</span>
+<span class="c1"># (choose between 1-4 gpus per node)</span>
+
+<span class="c1">#SBATCH --partition=gpu    # Choose either &quot;gpu&quot; or &quot;infer&quot; node type</span>
+<span class="c1">#SBATCH --nodes=1          # Resources from a single node</span>
+<span class="c1">#SBATCH --gres=gpu:1       # One GPU per node (plus 25% of node CPU and RAM per GPU)</span>
+
+<span class="c1"># Run commands:</span>
+
+<span class="n">nvidia</span><span class="o">-</span><span class="n">smi</span>  <span class="c1"># Display available gpu resources</span>
+
+<span class="c1"># Place other commands here</span>
+
+<span class="n">echo</span> <span class="s2">&quot;end of job&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="multiple-nodes-mpi">
+<h4>Multiple nodes (MPI)<a class="headerlink" href="#multiple-nodes-mpi" title="Permalink to this headline">¶</a></h4>
+<p>Example job script for programs using MPI to take advantage of multiple
+CPUs/GPUs across one or more machines:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+
+<span class="c1"># Generic options:</span>
+
+<span class="c1">#SBATCH --account=&lt;project&gt;  # Run job under project &lt;project&gt;</span>
+<span class="c1">#SBATCH --time=1:0:0         # Run for a max of 1 hour</span>
+
+<span class="c1"># Node resources:</span>
+
+<span class="c1">#SBATCH --partition=gpu    # Choose either &quot;gpu&quot; or &quot;infer&quot; node type</span>
+<span class="c1">#SBATCH --nodes=2          # Resources from a two nodes</span>
+<span class="c1">#SBATCH --gres=gpu:4       # Four GPUs per node (plus 100% of node CPU and RAM per node)</span>
+
+<span class="c1"># Run commands:</span>
+
+<span class="n">bede</span><span class="o">-</span><span class="n">mpirun</span> <span class="o">--</span><span class="n">bede</span><span class="o">-</span><span class="n">par</span> <span class="mi">1</span><span class="n">ppc</span> <span class="o">&lt;</span><span class="n">mpi_program</span><span class="o">&gt;</span>
+
+<span class="n">echo</span> <span class="s2">&quot;end of job&quot;</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">bede-mpirun</span></code> command takes both ordinary <code class="docutils literal"><span class="pre">mpirun</span></code> arguments and
+the special <code class="docutils literal"><span class="pre">--bede-par</span> <span class="pre">&lt;distrib&gt;</span></code> option, allowing control over how
+MPI jobs launch, e.g.&nbsp;one MPI rank per CPU core or GPU.</p>
+<p>The formal specification of the option is:
+<code class="docutils literal"><span class="pre">--bede-par</span> <span class="pre">&lt;rank_distrib&gt;[:&lt;thread_distrib&gt;]</span></code> and it defaults to
+<code class="docutils literal"><span class="pre">1ppc:1tpt</span></code></p>
+<p>Where <code class="docutils literal"><span class="pre">&lt;rank_distrib&gt;</span></code> can take <code class="docutils literal"><span class="pre">1ppn</span></code> (one process per node),
+<code class="docutils literal"><span class="pre">1ppg</span></code> (one process per GPU), <code class="docutils literal"><span class="pre">1ppc</span></code> (one process per CPU core) or
+<code class="docutils literal"><span class="pre">1ppt</span></code> (one process per CPU thread).</p>
+<p>And <code class="docutils literal"><span class="pre">&lt;thread_distrib&gt;</span></code> can take <code class="docutils literal"><span class="pre">1tpc</span></code> (set <code class="docutils literal"><span class="pre">OMP_NUM_THREADS</span></code> to
+the number of cores available to each process), <code class="docutils literal"><span class="pre">1tpt</span></code> (set
+<code class="docutils literal"><span class="pre">OMP_NUM_THREADS</span></code> to the number of hardware threads available to each
+process) or <code class="docutils literal"><span class="pre">none</span></code> (set <code class="docutils literal"><span class="pre">OMP_NUM_THREADS=1</span></code>)</p>
+<p>Examples:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># - One MPI rank per node:</span>
+<span class="n">bede</span><span class="o">-</span><span class="n">mpirun</span> <span class="o">--</span><span class="n">bede</span><span class="o">-</span><span class="n">par</span> <span class="mi">1</span><span class="n">ppn</span> <span class="o">&lt;</span><span class="n">mpirun_options</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">program</span><span class="o">&gt;</span>
+
+<span class="c1"># - One MPI rank per gpu:</span>
+<span class="n">bede</span><span class="o">-</span><span class="n">mpirun</span> <span class="o">--</span><span class="n">bede</span><span class="o">-</span><span class="n">par</span> <span class="mi">1</span><span class="n">ppg</span> <span class="o">&lt;</span><span class="n">mpirun_options</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">program</span><span class="o">&gt;</span>
+
+<span class="c1"># - One MPI rank per core:</span>
+<span class="n">bede</span><span class="o">-</span><span class="n">mpirun</span> <span class="o">--</span><span class="n">bede</span><span class="o">-</span><span class="n">par</span> <span class="mi">1</span><span class="n">ppc</span> <span class="o">&lt;</span><span class="n">mpirun_options</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">program</span><span class="o">&gt;</span>
+
+<span class="c1"># - One MPI rank per hwthread:</span>
+<span class="n">bede</span><span class="o">-</span><span class="n">mpirun</span> <span class="o">--</span><span class="n">bede</span><span class="o">-</span><span class="n">par</span> <span class="mi">1</span><span class="n">ppt</span> <span class="o">&lt;</span><span class="n">mpirun_options</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">program</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="multiple-nodes-ibm-powerai-ddl">
+<h4>Multiple nodes (IBM PowerAI DDL)<a class="headerlink" href="#multiple-nodes-ibm-powerai-ddl" title="Permalink to this headline">¶</a></h4>
+<p>IBM PowerAI DDL (Distributed Deep Learning) is a method of using the
+GPUs in more than one node to perform calculations. Example job script:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>#!/bin/bash
+
+# Generic options:
+
+#SBATCH --account=&lt;project&gt;  # Run job under project &lt;project&gt;
+#SBATCH --time=1:0:0         # Run for a max of 1 hour
+
+# Node resources:
+
+#SBATCH --partition=gpu    # Choose either &quot;gpu&quot; or &quot;infer&quot; node type
+#SBATCH --nodes=2          # Resources from a two nodes
+#SBATCH --gres=gpu:4       # Four GPUs per node (plus 100% of node CPU and RAM per node)
+
+# Run commands:
+
+# (assume IBM Watson Machine Learning Community Edition is installed
+# in conda environment &quot;wmlce&quot;)
+
+conda activate wmlce
+
+bede-ddlrun python $CONDA_PREFIX/ddl-tensorflow/examples/keras/mnist-tf-keras-adv.py
+
+echo &quot;end of job&quot;
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+  <div data-ea-publisher>
+  </div>
+  
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/usage/index.rst.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2020, N8 CIR.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.<br/>
+    </p>
+  </div>
+</footer>
+
+  </body>
+</html>

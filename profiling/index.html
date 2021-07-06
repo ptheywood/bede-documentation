@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Profiling &#8212; Bede Documentation  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Useful Training Material" href="../training/index.html" />
+    <link rel="prev" title="Classical introduction to parallel computing - estimating pi in CUDA" href="../software/wanderings/Estimating-pi-in-CUDALand.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+  </head>
+  <body role="document">
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html"><span><img src="../_static/logo-cmyk.png"></span>
+           </a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../hardware/index.html">Hardware</a></li>
+                <li><a href="../software/index.html">Software</a></li>
+                <li><a href="../usage/index.html">Usage</a></li>
+                <li><a href="#">Profiling</a></li>
+                <li><a href="../training/index.html">Training</a></li>
+                <li><a href="../bug/index.html">User Group</a></li>
+                <li><a href="../faq/index.html">FAQ</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Contents <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../hardware/index.html">Hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/index.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../software/index.html">Software</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Profiling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../training/index.html">Useful Training Material</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bug/index.html">Bede User Group</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li><a class="reference internal" href="#">Profiling</a><ul>
+<li><a class="reference internal" href="#nvidia-profiling-tools">NVIDIA Profiling Tools</a><ul>
+<li><a class="reference internal" href="#compiler-settings-for-profiling">Compiler settings for profiling</a></li>
+<li><a class="reference internal" href="#nsight-systems-and-nsight-compute">Nsight Systems and Nsight Compute</a><ul>
+<li><a class="reference internal" href="#more-info">More info</a></li>
+<li><a class="reference internal" href="#cluster-modules">Cluster Modules</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#visual-profiler-legacy">Visual Profiler (legacy)</a><ul>
+<li><a class="reference internal" href="#documentation">Documentation</a></li>
+<li><a class="reference internal" href="#id1">Cluster Modules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#nvidia-tools-extension">NVIDIA Tools Extension</a><ul>
+<li><a class="reference internal" href="#id2">Documentation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <li>
+    <a href="../software/wanderings/Estimating-pi-in-CUDALand.html" title="Previous Chapter: Classical introduction to parallel computing - estimating pi in CUDA"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Classical int...</span>
+    </a>
+  </li>
+  <li>
+    <a href="../training/index.html" title="Next Chapter: Useful Training Material"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Useful Traini... &raquo;</span>
+    </a>
+  </li>
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
+      
+  <div class="section" id="profiling">
+<h1>Profiling<a class="headerlink" href="#profiling" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="nvidia-profiling-tools">
+<h2>NVIDIA Profiling Tools<a class="headerlink" href="#nvidia-profiling-tools" title="Permalink to this headline">¶</a></h2>
+<p>HPC systems typically favour batch jobs rather than interactive jobs for improved utilsation of resources.
+The Nvidia profiling tools can all be used to capture all required via the command line, which can then be interrogated using the GUI tools locally.</p>
+<p>Nsight Systems and Nsight Compute are the modern Nvidia profiling tools, introduced with CUDA 10.0 supporting Pascal+ and Volta+ respectivley.</p>
+<p>The NVIDIA Visual Profiler is the legacy profiling tool, with full support for GPUs up to pascal (SM &lt; 75), partial support for Turing (SM 75 and no support for Ampere (SM80).</p>
+<div class="section" id="compiler-settings-for-profiling">
+<h3>Compiler settings for profiling<a class="headerlink" href="#compiler-settings-for-profiling" title="Permalink to this headline">¶</a></h3>
+<p>Applications compiled with <code class="docutils literal"><span class="pre">nvcc</span></code> should pass <code class="docutils literal"><span class="pre">-lineinfo</span></code> (or <code class="docutils literal"><span class="pre">--generate-line-info</span></code>) to include source-level profile information.</p>
+<p>Additionally, <a class="reference external" href="https://docs.nvidia.com/gameworks/index.html#gameworkslibrary/nvtx/nvidia_tools_extension_library_nvtx.htm">NVIDIA Tools Extension SDK</a> can be used to enhance these profiling tools.</p>
+</div>
+<div class="section" id="nsight-systems-and-nsight-compute">
+<h3>Nsight Systems and Nsight Compute<a class="headerlink" href="#nsight-systems-and-nsight-compute" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<ul class="last simple">
+<li>Nsight Systems supports Pascal and above (SM 60+)</li>
+<li>Nsight Compute supports Volta and aboce (SM 70+)</li>
+</ul>
+</div>
+<p>Generate an application timeline with Nsight Systems CLI (<code class="docutils literal"><span class="pre">nsys</span></code>):</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>nsys profile -o timeline ./myapplication
+</pre></div>
+</div>
+<p>Use the <code class="docutils literal"><span class="pre">--trace</span></code> argument to specify which APIs should be traced.
+See the <a class="reference external" href="https://docs.nvidia.com/nsight-systems/profiling/index.html#cli-profile-command-switch-options">nsys profiling command switch options</a> for further information.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>nsys profile -o timeline --trace cuda,nvtx,osrt,openacc ./myapplication &lt;arguments&gt;
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">On Bede (Power9) the <code class="docutils literal"><span class="pre">--trace</span></code> option <code class="docutils literal"><span class="pre">osrt</span></code> can lead to <code class="docutils literal"><span class="pre">SIGILL</span></code> errors. As this is a default, consider passing <code class="docutils literal"><span class="pre">--trace</span> <span class="pre">cuda,nvtx</span></code> as an alternative minimum.</p>
+</div>
+<p>Once this file has been downloaded to your local machine, it can be opened in <code class="docutils literal"><span class="pre">nsys-ui</span></code>/<code class="docutils literal"><span class="pre">nsight-sys</span></code> via <code class="docutils literal"><span class="pre">File</span> <span class="pre">&gt;</span> <span class="pre">Open</span> <span class="pre">&gt;</span> <span class="pre">timeline.qdrep</span></code>:</p>
+<p>Fine-grained kernel profile information can be captured using remote Nsight Compute CLI (<code class="docutils literal"><span class="pre">ncu</span></code>/<code class="docutils literal"><span class="pre">nv-nsight-cu-cli</span></code>):</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>ncu -o profile --set full ./myapplication &lt;arguments&gt;
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><code class="docutils literal"><span class="pre">ncu</span></code> is available since CUDA v11.0.194, and Nsight Compute v2020.1.1. For older versions of CUDA use <code class="docutils literal"><span class="pre">nv-nsight-cu-cli</span></code> (if Nsight Compute is installed).</p>
+</div>
+<p>This will capture the full set of available metrics, to populate all sections of the Nsight Compute GUI, however this can lead to very long run times to capture all the information.</p>
+<p>For long running applications, it may be favourable to capture a smaller set of metrics using the <code class="docutils literal"><span class="pre">--set</span></code>, <code class="docutils literal"><span class="pre">--section</span></code> and <code class="docutils literal"><span class="pre">--metrics</span></code> flags as described in the <a class="reference external" href="https://docs.nvidia.com/nsight-compute/NsightComputeCli/index.html#command-line-options-profile">Nsight Comptue Profile Command Line Options table</a>.</p>
+<p>The scope of the section being profiled can also be reduced using <a class="reference external" href="https://docs.nvidia.com/nsight-compute/NsightComputeCli/index.html#nvtx-filtering">NVTX Filtering</a>; or by targetting specific kernels using <code class="docutils literal"><span class="pre">--kernel-id</span></code>, <code class="docutils literal"><span class="pre">--kernel-regex</span></code> and/or <code class="docutils literal"><span class="pre">--launch-skip</span></code> see the <a class="reference external" href="https://docs.nvidia.com/nsight-compute/NsightComputeCli/index.html#command-line-options-profile">CLI docs for more information</a>).</p>
+<p>Once the <code class="docutils literal"><span class="pre">.ncu-rep</span></code> file has been downloaded locally, it can be imported into local Nsight CUDA GUI <code class="docutils literal"><span class="pre">ncu-ui</span></code>/<code class="docutils literal"><span class="pre">nv-nsight-cu</span></code> via:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>ncu-ui profile.ncu-rep
+</pre></div>
+</div>
+<p><strong>Or</strong> <code class="docutils literal"><span class="pre">File</span> <span class="pre">&gt;</span> <span class="pre">Open</span> <span class="pre">&gt;</span> <span class="pre">profile.ncu-rep</span></code>, <strong>or</strong> Drag <code class="docutils literal"><span class="pre">profile.ncu-rep</span></code> into the <code class="docutils literal"><span class="pre">nv-nsight-cu</span></code> window.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Older versions of Nsight Compute (CUDA &lt; v11.0.194) used <code class="docutils literal"><span class="pre">nv-nsight-cu</span></code> rather than <code class="docutils literal"><span class="pre">ncu-ui</span></code>.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Older versions of Nsight Compute generated <code class="docutils literal"><span class="pre">.nsight-cuprof-report</span></code> files, instead of <code class="docutils literal"><span class="pre">.ncu-rep</span></code> files.</p>
+</div>
+<div class="section" id="more-info">
+<h4>More info<a class="headerlink" href="#more-info" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><a class="reference external" href="https://docs.nvidia.com/nsight-systems/">Nsight Systems</a></li>
+<li><a class="reference external" href="https://docs.nvidia.com/nsight-compute/">Nsight Compute</a></li>
+<li><a class="reference external" href="https://vimeo.com/398838139">OLCF: Nsight Systems Tutorial</a></li>
+<li><a class="reference external" href="https://vimeo.com/398929189">OLCF: Nsight Compute Tutorial</a></li>
+</ul>
+<p>Use the following <a class="reference external" href="https://drive.google.com/open?id=133a90SIupysHfbO3mlyfXfaEivCyV1EP">Nsight report files</a> to follow the tutorial.</p>
+</div>
+<div class="section" id="cluster-modules">
+<h4>Cluster Modules<a class="headerlink" href="#cluster-modules" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">module</span> <span class="pre">load</span> <span class="pre">nvidia/20.5</span></code></li>
+</ul>
+</div>
+</div>
+<div class="section" id="visual-profiler-legacy">
+<h3>Visual Profiler (legacy)<a class="headerlink" href="#visual-profiler-legacy" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<ul class="last simple">
+<li>Nvprof does not support CUDA kernel profiling for Turing GPUs (SM75)</li>
+<li>Nvprof does not support Ampere GPUs (SM80+)</li>
+</ul>
+</div>
+<p>Application timelines can be generated using <code class="docutils literal"><span class="pre">nvprof</span></code>:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>nvprof -o timeline.nvprof ./myapplication
+</pre></div>
+</div>
+<p>Fine-grained kernel profile information can be genereted remotely using <code class="docutils literal"><span class="pre">nvprof</span></code>:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>nvprof --analysis-metrics -o analysis.nvprof ./myapplication
+</pre></div>
+</div>
+<p>This captuires the full set of metrics required to complete the guided analysis, and may take a (very long) while.
+Large applications request fewer metrics (via <code class="docutils literal"><span class="pre">--metrics</span></code>), fewer events (via <code class="docutils literal"><span class="pre">--events</span></code>) or target specific kernels (via <code class="docutils literal"><span class="pre">--kernels</span></code>). See the <a class="reference external" href="https://docs.nvidia.com/cuda/profiler-users-guide/index.html">nvprof command line options</a> for further information.</p>
+<p>Once these files are downloaded to your local machine, Import them into the Visual Profiler GUI (<code class="docutils literal"><span class="pre">nvvp</span></code>)</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">File</span> <span class="pre">&gt;</span> <span class="pre">Import</span></code></li>
+<li>Select <code class="docutils literal"><span class="pre">Nvprof</span></code></li>
+<li>Select <code class="docutils literal"><span class="pre">Single</span> <span class="pre">process</span></code></li>
+<li>Select <code class="docutils literal"><span class="pre">timeline.nvvp</span></code> for <code class="docutils literal"><span class="pre">Timeline</span> <span class="pre">data</span> <span class="pre">file</span></code></li>
+<li>Add <code class="docutils literal"><span class="pre">analysis.nvprof</span></code> to <code class="docutils literal"><span class="pre">Event/Metric</span> <span class="pre">data</span> <span class="pre">files</span></code></li>
+</ul>
+<div class="section" id="documentation">
+<h4>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><a class="reference external" href="https://docs.nvidia.com/cuda/profiler-users-guide/index.html">Nvprof Documentation</a></li>
+</ul>
+</div>
+<div class="section" id="id1">
+<h4>Cluster Modules<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">module</span> <span class="pre">load</span> <span class="pre">cuda/10.1</span></code></li>
+<li><code class="docutils literal"><span class="pre">module</span> <span class="pre">load</span> <span class="pre">cuda/10.2</span></code></li>
+<li><code class="docutils literal"><span class="pre">module</span> <span class="pre">load</span> <span class="pre">nvidia/20.5</span></code></li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+</div>
+<div class="section" id="nvidia-tools-extension">
+<h2>NVIDIA Tools Extension<a class="headerlink" href="#nvidia-tools-extension" title="Permalink to this headline">¶</a></h2>
+<p>NVIDIA Tools Extension (NVTX) is a C-based API for annotating events and ranges in applications.
+These markers and ranges can be used to increase the usability of the NVIDIA profiling tools.</p>
+<ul class="simple">
+<li>For CUDA <code class="docutils literal"><span class="pre">&gt;=</span> <span class="pre">10.0</span></code>, NVTX version 3 is distributed as a header only library.</li>
+<li>For CUDA <code class="docutils literal"><span class="pre">&lt;</span>&#160; <span class="pre">10.0</span></code>, NVTX is distributed as a shared library.</li>
+</ul>
+<p>The location of the headers and shared libraries may vary between Operating Systems, and CUDA installation (i.e. CUDA toolkit, PGI compilers or HPC SDK).</p>
+<p>The NVIDIA Developer blog contains several posts on using NVTX:</p>
+<ul class="simple">
+<li><a class="reference external" href="https://developer.nvidia.com/blog/cuda-pro-tip-generate-custom-application-profile-timelines-nvtx/">Generate Custom Application Profile Timelines with NVTX (Jiri Kraus)</a></li>
+<li><a class="reference external" href="https://developer.nvidia.com/blog/gpu-pro-tip-track-mpi-calls-nvidia-visual-profiler/">Track MPI Calls In The NVIDIA Visual Profiler (Jeff Larkin)</a></li>
+<li><a class="reference external" href="https://developer.nvidia.com/blog/customize-cuda-fortran-profiling-nvtx/">Customize CUDA Fortran Profiling with NVTX (Massimiliano Fatica)</a></li>
+</ul>
+<p>Custom CMake <code class="docutils literal"><span class="pre">find_package</span></code> modules can be written to enable use within Cmake e.g. <a class="reference external" href="https://github.com/ptheywood/cuda-cmake-nvtx">ptheywood/cuda-cmake-NVTX on GitHub</a></p>
+<div class="section" id="id2">
+<h3>Documentation<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference external" href="https://docs.nvidia.com/gameworks/index.html#gameworkslibrary/nvtx/nvidia_tools_extension_library_nvtx.htm">NVTX Documentation</a></li>
+<li><a class="reference external" href="https://github.com/NVIDIA/NVTX">NVTX 3 on GitHub</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+  <div data-ea-publisher>
+  </div>
+  
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/profiling/index.rst.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2020, N8 CIR.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.<br/>
+    </p>
+  </div>
+</footer>
+
+  </body>
+</html>

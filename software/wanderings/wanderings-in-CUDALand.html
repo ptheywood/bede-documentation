@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Wanderings in CUDA land - Exploring parallel computing with CUDA &#8212; Bede Documentation  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Classical introduction to parallel computing - estimating pi in CUDA" href="Estimating-pi-in-CUDALand.html" />
+    <link rel="prev" title="Watson Machine Learning Community Edition resnet50 benchmark" href="../resnet50/bede-README-sbatch.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js "></script>
+
+  </head>
+  <body role="document">
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html"><span><img src="../../_static/logo-cmyk.png"></span>
+           </a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../hardware/index.html">Hardware</a></li>
+                <li><a href="../index.html">Software</a></li>
+                <li><a href="../../usage/index.html">Usage</a></li>
+                <li><a href="../../profiling/index.html">Profiling</a></li>
+                <li><a href="../../training/index.html">Training</a></li>
+                <li><a href="../../bug/index.html">User Group</a></li>
+                <li><a href="../../faq/index.html">FAQ</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Contents <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../hardware/index.html">Hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/index.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../profiling/index.html">Profiling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../training/index.html">Useful Training Material</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq/index.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bug/index.html">Bede User Group</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li><a class="reference internal" href="#">Wanderings in CUDA land - Exploring parallel computing with CUDA</a><ul>
+<li><a class="reference internal" href="#some-background-terminology">Some background terminology</a></li>
+<li><a class="reference internal" href="#a-getting-started-example">A getting started example</a></li>
+<li><a class="reference internal" href="#looking-more-carefully-at-unified-memory">Looking more carefully at unified memory</a></li>
+<li><a class="reference internal" href="#putting-the-pieces-together">Putting the pieces together</a></li>
+<li><a class="reference internal" href="#future-work">Future Work</a></li>
+</ul>
+</li>
+</ul>
+
+  <li>
+    <a href="../resnet50/bede-README-sbatch.html" title="Previous Chapter: Watson Machine Learning Community Edition resnet50 benchmark"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Watson Machin...</span>
+    </a>
+  </li>
+  <li>
+    <a href="Estimating-pi-in-CUDALand.html" title="Next Chapter: Classical introduction to parallel computing - estimating pi in CUDA"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Classical int... &raquo;</span>
+    </a>
+  </li>
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
+      
+  <div class="section" id="wanderings-in-cuda-land-exploring-parallel-computing-with-cuda">
+<h1>Wanderings in CUDA land - Exploring parallel computing with CUDA<a class="headerlink" href="#wanderings-in-cuda-land-exploring-parallel-computing-with-cuda" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="some-background-terminology">
+<h2>Some background terminology<a class="headerlink" href="#some-background-terminology" title="Permalink to this headline">¶</a></h2>
+<p>In the following, references are made frequently about CPU and GPU actions. This can be confusing shorthand.
+As explained in most introductory tutorials about using / programming GPUs, (for instance
+<a class="reference external" href="https://developer.nvidia.com/blog/cuda-refresher-reviewing-the-origins-of-gpu-computing/">https://developer.nvidia.com/blog/cuda-refresher-reviewing-the-origins-of-gpu-computing/</a> )
+the GPU with its memory and processor is distinct from the conventional computer arrangement with one or more CPUs,
+memory attached directly to the CPUs and connections to storage devices and external connections. In other words, data
+stored in the GPU memory is not normally accessible from the CPU and conversely, data in the CPU memory is not
+normally accessible from the GPU. Until recently, users were responsible for the explicit copying of data to / from
+the GPU memory. Therefore, the reader should understand that the term CPU is shorthand for the compute performed by
+the CPU using data in memory that is addressable (accessible) from that CPU. GPU refers to the GPU-specific domain. One profound
+difference among the two domains, which is critical for this note, is that the way parallel computation is expressed and
+performed in the CPU and GPU domains is fundamentally different.</p>
+<p>Finally, in some of the comments of the accompanying codes, reference is often made to &#8220;the device&#8221;. In this context, the device always refers to
+the active GPU.</p>
+<p>In order to make compuations on the GPU more accessible. NVIDIA, via its CUDA products, has provided an extensive programming environment and set of
+libraries for
+different functionalities that are invoked on
+the CPU to perform on the GPU using data already on the GPU. These libraries include FFTs (libcufft.so), operations on sparse matrices (libcusparse.so) and
+Basic Linear Algebra operations on dense vectors and matrices (libcublas.so). Some of our examples exploit routines in the libcublas.</p>
+<p>NVIDIA also provides a C++ compatible compiler wrapper to make compiling some of CUDA-based codes easier, called nvcc. nvcc performs extensive
+preprocessing on C/C++
+codes with the extension .cu. It also hides the linkage to basic CUDA support libraries.</p>
+</div>
+<div class="section" id="a-getting-started-example">
+<h2>A getting started example<a class="headerlink" href="#a-getting-started-example" title="Permalink to this headline">¶</a></h2>
+<p>The first code is a traditional CPU-GPU call of the float Level 3 BLAS matrix-matrix
+multiplication, sgemm. The workflow in this program can be broken down as follows:</p>
+<p>1.  Create or read-in matrics on the CPU side.</p>
+<p>2.  Create companion matrices on the GPU.</p>
+<p>3.  Create a handle for the CUBLAS context on the GPU.</p>
+<p>4.  Copy data from CPU to GPU.</p>
+<p>5.  Perform computations on the GPU.</p>
+<p>6.  Copy results back to CPU for output and final processing.</p>
+<p>7.  Free up the storage used on both CPU and GPU side.</p>
+<p>The matrices are initialised on the CPU, copied to
+similarly sized arrays on the GPU, the sgemm call is made on the GPU and then
+the relevant array is copied back to the CPU to print out.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">nvcc</span> <span class="mi">036</span><span class="n">sgemm</span><span class="o">.</span><span class="n">c</span> <span class="o">-</span><span class="n">lcublas</span>
+<span class="o">//</span> <span class="n">From</span> <span class="s2">&quot;Matrix computations on the GPU CUBLAS, CUSOLVER and MAGMA by example. Version 2017&quot;</span> 
+<span class="o">//</span> <span class="n">by</span> <span class="n">Andrzej</span> <span class="n">Chrzeszczyk</span> <span class="ow">and</span> <span class="n">Jacob</span> <span class="n">Anders</span>
+<span class="c1">#include &lt;stdio.h&gt;</span>
+<span class="c1">#include &lt;stdlib.h&gt;</span>
+<span class="c1">#include &lt;cuda_runtime.h&gt;</span>
+<span class="c1">#include &quot;cublas_v2.h&quot;</span>
+<span class="c1">#define IDX2C(i,j,ld) (((j)*( ld ))+( i ))</span>
+<span class="c1">#define m 6 // a - mxk matrix</span>
+<span class="c1">#define n 4 // b - kxn matrix</span>
+<span class="c1">#define k 5 // c - mxn matrix</span>
+<span class="nb">int</span> <span class="n">main</span><span class="p">(</span><span class="n">void</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">cudaError_t</span> <span class="n">cudaStat</span><span class="p">;</span> <span class="o">//</span> <span class="n">cudaMalloc</span> <span class="n">status</span>
+	<span class="n">cublasStatus_t</span> <span class="n">stat</span><span class="p">;</span> <span class="o">//</span> <span class="n">CUBLAS</span> <span class="n">functions</span> <span class="n">status</span>
+	<span class="n">cublasHandle_t</span> <span class="n">handle</span><span class="p">;</span> <span class="o">//</span> <span class="n">CUBLAS</span> <span class="n">context</span>
+	<span class="nb">int</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">;</span> <span class="o">//</span> <span class="n">i</span><span class="o">-</span><span class="n">row</span> <span class="n">index</span> <span class="p">,</span><span class="n">j</span><span class="o">-</span> <span class="n">column</span> <span class="n">index</span>
+	<span class="nb">float</span><span class="o">*</span> <span class="n">a</span><span class="p">;</span> <span class="o">//</span> <span class="n">mxk</span> <span class="n">matrix</span> <span class="n">a</span> <span class="n">on</span> <span class="n">the</span> <span class="n">host</span>
+	<span class="nb">float</span><span class="o">*</span> <span class="n">b</span><span class="p">;</span> <span class="o">//</span> <span class="n">kxn</span> <span class="n">matrix</span> <span class="n">b</span> <span class="n">on</span> <span class="n">the</span> <span class="n">host</span>
+	<span class="nb">float</span><span class="o">*</span> <span class="n">c</span><span class="p">;</span> <span class="o">//</span> <span class="n">mxn</span> <span class="n">matrix</span> <span class="n">c</span> <span class="n">on</span> <span class="n">the</span> <span class="n">host</span>
+	<span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="n">m</span><span class="o">*</span><span class="n">k</span> <span class="o">*</span> <span class="n">sizeof</span><span class="p">(</span><span class="nb">float</span><span class="p">));</span> <span class="o">//</span> <span class="n">host</span> <span class="n">memory</span> <span class="k">for</span> <span class="n">a</span>
+	<span class="n">b</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="n">k</span><span class="o">*</span><span class="n">n</span> <span class="o">*</span> <span class="n">sizeof</span><span class="p">(</span><span class="nb">float</span><span class="p">));</span> <span class="o">//</span> <span class="n">host</span> <span class="n">memory</span> <span class="k">for</span> <span class="n">b</span>
+	<span class="n">c</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="n">m</span><span class="o">*</span><span class="n">n</span> <span class="o">*</span> <span class="n">sizeof</span><span class="p">(</span><span class="nb">float</span><span class="p">));</span> <span class="o">//</span> <span class="n">host</span> <span class="n">memory</span> <span class="k">for</span> <span class="n">c</span>
+	<span class="o">//</span> <span class="n">define</span> <span class="n">an</span> <span class="n">mxk</span> <span class="n">matrix</span> <span class="n">a</span> <span class="n">column</span> <span class="n">by</span> <span class="n">column</span>
+	<span class="nb">int</span> <span class="n">ind</span> <span class="o">=</span> <span class="mi">11</span><span class="p">;</span> <span class="o">//</span> <span class="n">a</span><span class="p">:</span>
+	<span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">j</span> <span class="o">&lt;</span> <span class="n">k</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>                           <span class="o">//</span> <span class="mi">11</span> <span class="p">,</span><span class="mi">17</span> <span class="p">,</span><span class="mi">23</span> <span class="p">,</span><span class="mi">29</span> <span class="p">,</span><span class="mi">35</span>
+		<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>                   <span class="o">//</span> <span class="mi">12</span> <span class="p">,</span><span class="mi">18</span> <span class="p">,</span><span class="mi">24</span> <span class="p">,</span><span class="mi">30</span> <span class="p">,</span><span class="mi">36</span>
+			<span class="n">a</span><span class="p">[</span><span class="n">IDX2C</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">m</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="n">ind</span><span class="o">++</span><span class="p">;</span> <span class="o">//</span> <span class="mi">13</span> <span class="p">,</span><span class="mi">19</span> <span class="p">,</span><span class="mi">25</span> <span class="p">,</span><span class="mi">31</span> <span class="p">,</span><span class="mi">37</span>
+		<span class="p">}</span>                                         <span class="o">//</span> <span class="mi">14</span> <span class="p">,</span><span class="mi">20</span> <span class="p">,</span><span class="mi">26</span> <span class="p">,</span><span class="mi">32</span> <span class="p">,</span><span class="mi">38</span>
+	<span class="p">}</span>                                                 <span class="o">//</span> <span class="mi">15</span> <span class="p">,</span><span class="mi">21</span> <span class="p">,</span><span class="mi">27</span> <span class="p">,</span><span class="mi">33</span> <span class="p">,</span><span class="mi">39</span>
+	                                                  <span class="o">//</span> <span class="mi">16</span> <span class="p">,</span><span class="mi">22</span> <span class="p">,</span><span class="mi">28</span> <span class="p">,</span><span class="mi">34</span> <span class="p">,</span><span class="mi">40</span>
+	<span class="o">//</span> <span class="nb">print</span> <span class="n">a</span> <span class="n">row</span> <span class="n">by</span> <span class="n">row</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s2">&quot;a:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+	<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">j</span> <span class="o">&lt;</span> <span class="n">k</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">printf</span><span class="p">(</span><span class="s2">&quot; </span><span class="si">%5.0f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="n">IDX2C</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">m</span><span class="p">)]);</span>
+		<span class="p">}</span>
+		<span class="n">printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+	<span class="p">}</span>
+	<span class="o">//</span> <span class="n">define</span> <span class="n">a</span> <span class="n">kxn</span> <span class="n">matrix</span> <span class="n">b</span> <span class="n">column</span> <span class="n">by</span> <span class="n">column</span>
+	<span class="n">ind</span> <span class="o">=</span> <span class="mi">11</span><span class="p">;</span> <span class="o">//</span> <span class="n">b</span><span class="p">:</span>
+	<span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">j</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>                           <span class="o">//</span> <span class="mi">11</span> <span class="p">,</span><span class="mi">16</span> <span class="p">,</span><span class="mi">21</span> <span class="p">,</span><span class="mi">26</span>
+		<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">k</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span> 		  <span class="o">//</span> <span class="mi">12</span> <span class="p">,</span><span class="mi">17</span> <span class="p">,</span><span class="mi">22</span> <span class="p">,</span><span class="mi">27</span>
+			<span class="n">b</span><span class="p">[</span><span class="n">IDX2C</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="n">ind</span><span class="o">++</span><span class="p">;</span> <span class="o">//</span> <span class="mi">13</span> <span class="p">,</span><span class="mi">18</span> <span class="p">,</span><span class="mi">23</span> <span class="p">,</span><span class="mi">28</span>
+		<span class="p">}</span> 					  <span class="o">//</span> <span class="mi">14</span> <span class="p">,</span><span class="mi">19</span> <span class="p">,</span><span class="mi">24</span> <span class="p">,</span><span class="mi">29</span>
+	<span class="p">}</span>  						  <span class="o">//</span> <span class="mi">15</span> <span class="p">,</span><span class="mi">20</span> <span class="p">,</span><span class="mi">25</span> <span class="p">,</span><span class="mi">30</span>
+	<span class="o">//</span> <span class="nb">print</span> <span class="n">b</span> <span class="n">row</span> <span class="n">by</span> <span class="n">row</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s2">&quot;b:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+	<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">k</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">j</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">printf</span><span class="p">(</span><span class="s2">&quot; </span><span class="si">%5.0f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="n">IDX2C</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">)]);</span>
+		<span class="p">}</span>
+		<span class="n">printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+	<span class="p">}</span>
+	<span class="o">//</span> <span class="n">define</span> <span class="n">an</span> <span class="n">mxn</span> <span class="n">matrix</span> <span class="n">c</span> <span class="n">column</span> <span class="n">by</span> <span class="n">column</span>
+	<span class="n">ind</span> <span class="o">=</span> <span class="mi">11</span><span class="p">;</span> <span class="o">//</span> <span class="n">c</span><span class="p">:</span>
+	<span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">j</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span> 			  <span class="o">//</span> <span class="mi">11</span> <span class="p">,</span><span class="mi">17</span> <span class="p">,</span><span class="mi">23</span> <span class="p">,</span><span class="mi">29</span>
+		<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span> 		  <span class="o">//</span> <span class="mi">12</span> <span class="p">,</span><span class="mi">18</span> <span class="p">,</span><span class="mi">24</span> <span class="p">,</span><span class="mi">30</span>
+			<span class="n">c</span><span class="p">[</span><span class="n">IDX2C</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">m</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="n">ind</span><span class="o">++</span><span class="p">;</span> <span class="o">//</span> <span class="mi">13</span> <span class="p">,</span><span class="mi">19</span> <span class="p">,</span><span class="mi">25</span> <span class="p">,</span><span class="mi">31</span>
+		<span class="p">}</span> 					  <span class="o">//</span> <span class="mi">14</span> <span class="p">,</span><span class="mi">20</span> <span class="p">,</span><span class="mi">26</span> <span class="p">,</span><span class="mi">32</span>
+	<span class="p">}</span> 					          <span class="o">//</span> <span class="mi">15</span> <span class="p">,</span><span class="mi">21</span> <span class="p">,</span><span class="mi">27</span> <span class="p">,</span><span class="mi">33</span>
+	 						  <span class="o">//</span> <span class="mi">16</span> <span class="p">,</span><span class="mi">22</span> <span class="p">,</span><span class="mi">28</span> <span class="p">,</span><span class="mi">34</span>
+	<span class="o">//</span> <span class="nb">print</span> <span class="n">c</span> <span class="n">row</span> <span class="n">by</span> <span class="n">row</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s2">&quot;c:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+	<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">j</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">printf</span><span class="p">(</span><span class="s2">&quot; </span><span class="si">%5.0f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">c</span><span class="p">[</span><span class="n">IDX2C</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">m</span><span class="p">)]);</span>
+		<span class="p">}</span>
+		<span class="n">printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+	<span class="p">}</span>
+	<span class="o">//</span> <span class="n">on</span> <span class="n">the</span> <span class="n">device</span>
+	<span class="nb">float</span><span class="o">*</span> <span class="n">d_a</span><span class="p">;</span> <span class="o">//</span> <span class="n">d_a</span> <span class="o">-</span> <span class="n">a</span> <span class="n">on</span> <span class="n">the</span> <span class="n">device</span>
+	<span class="nb">float</span><span class="o">*</span> <span class="n">d_b</span><span class="p">;</span> <span class="o">//</span> <span class="n">d_b</span> <span class="o">-</span> <span class="n">b</span> <span class="n">on</span> <span class="n">the</span> <span class="n">device</span>
+	<span class="nb">float</span><span class="o">*</span> <span class="n">d_c</span><span class="p">;</span> <span class="o">//</span> <span class="n">d_c</span> <span class="o">-</span> <span class="n">c</span> <span class="n">on</span> <span class="n">the</span> <span class="n">device</span>
+	<span class="n">cudaStat</span> <span class="o">=</span> <span class="n">cudaMalloc</span><span class="p">((</span><span class="n">void</span> <span class="o">**</span><span class="p">)</span><span class="o">&amp;</span> <span class="n">d_a</span><span class="p">,</span> <span class="n">m</span><span class="o">*</span><span class="n">k</span> <span class="o">*</span> <span class="n">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">a</span><span class="p">));</span> <span class="o">//</span> <span class="n">device</span>
+	<span class="o">//</span> <span class="n">memory</span> <span class="n">alloc</span> <span class="k">for</span> <span class="n">a</span>
+	<span class="n">cudaStat</span> <span class="o">=</span> <span class="n">cudaMalloc</span><span class="p">((</span><span class="n">void</span> <span class="o">**</span><span class="p">)</span><span class="o">&amp;</span> <span class="n">d_b</span><span class="p">,</span> <span class="n">k</span><span class="o">*</span><span class="n">n</span> <span class="o">*</span> <span class="n">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">b</span><span class="p">));</span> <span class="o">//</span> <span class="n">device</span>
+	<span class="o">//</span> <span class="n">memory</span> <span class="n">alloc</span> <span class="k">for</span> <span class="n">b</span>
+	<span class="n">cudaStat</span> <span class="o">=</span> <span class="n">cudaMalloc</span><span class="p">((</span><span class="n">void</span> <span class="o">**</span><span class="p">)</span><span class="o">&amp;</span> <span class="n">d_c</span><span class="p">,</span> <span class="n">m</span><span class="o">*</span><span class="n">n</span> <span class="o">*</span> <span class="n">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">c</span><span class="p">));</span> <span class="o">//</span> <span class="n">device</span>
+	<span class="o">//</span> <span class="n">memory</span> <span class="n">alloc</span> <span class="k">for</span> <span class="n">c</span>
+	<span class="n">stat</span> <span class="o">=</span> <span class="n">cublasCreate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">handle</span><span class="p">);</span> <span class="o">//</span> <span class="n">initialize</span> <span class="n">CUBLAS</span> <span class="n">context</span>
+	<span class="o">//</span> <span class="n">copy</span> <span class="n">matrices</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">host</span> <span class="n">to</span> <span class="n">the</span> <span class="n">device</span>
+	<span class="n">stat</span> <span class="o">=</span> <span class="n">cublasSetMatrix</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">a</span><span class="p">),</span> <span class="n">a</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">d_a</span><span class="p">,</span> <span class="n">m</span><span class="p">);</span> <span class="o">//</span><span class="n">a</span> <span class="o">-&gt;</span> <span class="n">d_a</span>
+	<span class="n">stat</span> <span class="o">=</span> <span class="n">cublasSetMatrix</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">b</span><span class="p">),</span> <span class="n">b</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">d_b</span><span class="p">,</span> <span class="n">k</span><span class="p">);</span> <span class="o">//</span><span class="n">b</span> <span class="o">-&gt;</span> <span class="n">d_b</span>
+	<span class="n">stat</span> <span class="o">=</span> <span class="n">cublasSetMatrix</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">c</span><span class="p">),</span> <span class="n">c</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">d_c</span><span class="p">,</span> <span class="n">m</span><span class="p">);</span> <span class="o">//</span><span class="n">c</span> <span class="o">-&gt;</span> <span class="n">d_c</span>
+	<span class="nb">float</span> <span class="n">al</span> <span class="o">=</span> <span class="mf">1.0</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="n">al</span> <span class="o">=</span><span class="mi">1</span>
+	<span class="nb">float</span> <span class="n">bet</span> <span class="o">=</span> <span class="mf">1.0</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="n">bet</span> <span class="o">=</span><span class="mi">1</span>
+	<span class="o">//</span> <span class="n">matrix</span> <span class="o">-</span> <span class="n">matrix</span> <span class="n">multiplication</span> <span class="p">:</span> <span class="n">d_c</span> <span class="o">=</span> <span class="n">al</span><span class="o">*</span><span class="n">d_a</span> <span class="o">*</span><span class="n">d_b</span> <span class="o">+</span> <span class="n">bet</span> <span class="o">*</span><span class="n">d_c</span>
+	<span class="o">//</span> <span class="n">d_a</span> <span class="o">-</span><span class="n">mxk</span> <span class="n">matrix</span> <span class="p">,</span> <span class="n">d_b</span> <span class="o">-</span><span class="n">kxn</span> <span class="n">matrix</span> <span class="p">,</span> <span class="n">d_c</span> <span class="o">-</span><span class="n">mxn</span> <span class="n">matrix</span> <span class="p">;</span>
+	<span class="o">//</span> <span class="n">al</span> <span class="p">,</span><span class="n">bet</span> <span class="o">-</span><span class="n">scalars</span>
+	<span class="n">stat</span> <span class="o">=</span> <span class="n">cublasSgemm</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">CUBLAS_OP_N</span><span class="p">,</span> <span class="n">CUBLAS_OP_N</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">al</span><span class="p">,</span> <span class="n">d_a</span><span class="p">,</span>
+		<span class="n">m</span><span class="p">,</span> <span class="n">d_b</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">bet</span><span class="p">,</span> <span class="n">d_c</span><span class="p">,</span> <span class="n">m</span><span class="p">);</span>
+	<span class="n">stat</span> <span class="o">=</span> <span class="n">cublasGetMatrix</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">c</span><span class="p">),</span> <span class="n">d_c</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">m</span><span class="p">);</span> <span class="o">//</span> <span class="n">cp</span> <span class="n">d_c</span> <span class="o">-&gt;</span><span class="n">c</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s2">&quot;c after Sgemm :</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+	<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">j</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">printf</span><span class="p">(</span><span class="s2">&quot; </span><span class="si">%7.0f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">c</span><span class="p">[</span><span class="n">IDX2C</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">m</span><span class="p">)]);</span> <span class="o">//</span> <span class="nb">print</span> <span class="n">c</span> <span class="n">after</span> <span class="n">Sgemm</span>
+		<span class="p">}</span>
+		<span class="n">printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+	<span class="p">}</span>
+	<span class="n">cudaFree</span><span class="p">(</span><span class="n">d_a</span><span class="p">);</span> <span class="o">//</span> <span class="n">free</span> <span class="n">device</span> <span class="n">memory</span>
+	<span class="n">cudaFree</span><span class="p">(</span><span class="n">d_b</span><span class="p">);</span> <span class="o">//</span> <span class="n">free</span> <span class="n">device</span> <span class="n">memory</span>
+	<span class="n">cudaFree</span><span class="p">(</span><span class="n">d_c</span><span class="p">);</span> <span class="o">//</span> <span class="n">free</span> <span class="n">device</span> <span class="n">memory</span>
+	<span class="n">cublasDestroy</span><span class="p">(</span><span class="n">handle</span><span class="p">);</span> <span class="o">//</span> <span class="n">destroy</span> <span class="n">CUBLAS</span> <span class="n">context</span>
+	<span class="n">free</span><span class="p">(</span><span class="n">a</span><span class="p">);</span> <span class="o">//</span> <span class="n">free</span> <span class="n">host</span> <span class="n">memory</span>
+	<span class="n">free</span><span class="p">(</span><span class="n">b</span><span class="p">);</span> <span class="o">//</span> <span class="n">free</span> <span class="n">host</span> <span class="n">memory</span>
+	<span class="n">free</span><span class="p">(</span><span class="n">c</span><span class="p">);</span> <span class="o">//</span> <span class="n">free</span> <span class="n">host</span> <span class="n">memory</span>
+	<span class="k">return</span> <span class="n">EXIT_SUCCESS</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The next code is nearly identical, but this time unified memory is used, so
+that the data is not copied explicitly from the CPU to the GPU.</p>
+<p>Unified memory first appeared in 2014, but spurred by the Summit and Sierra systems from IBM from 2018 onwards, it has undergone extensive revisions
+behind the scenes to make it more efficient on different architectures. A good overview of unified memory can be found in the
+article <a class="reference external" href="https://developer.nvidia.com/blog/unified-memory-cuda-beginners/">https://developer.nvidia.com/blog/unified-memory-cuda-beginners/</a> written by Mark Harris in 2017. The presentation
+<a class="reference external" href="https://on-demand.gputechconf.com/gtc/2018/presentation/s8430-everything-you-need-to-know-about-unified-memory.pdf">https://on-demand.gputechconf.com/gtc/2018/presentation/s8430-everything-you-need-to-know-about-unified-memory.pdf</a> is also good
+and this goes into details on how unified memory sits atop a virtual memory shared between processors with page access being used
+to determine whether pages are physically located in the CPU or GPU memory (or on different GPUs). Mark also has an earlier Blog post about basic
+CUDA C/C++ programming that is worth reading at <a class="reference external" href="https://developer.nvidia.com/blog/even-easier-introduction-cuda/">https://developer.nvidia.com/blog/even-easier-introduction-cuda/</a>.</p>
+<p>Now, rather than creating shadow arrays on the GPU side that mirror those on the CPU with explicit copying between them,
+arrays are declared once via commands like <code class="docutils literal"><span class="pre">cudaMallocManaged</span></code>. Such arrays can be accessed on both the CPU and GPU easily, but there
+can be a significant performance hit if access patterns between the two domains are not managed intelligently.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">nvcc</span> <span class="mi">036</span> <span class="n">sgemm</span><span class="o">.</span><span class="n">cu</span> <span class="o">-</span><span class="n">lcublas</span>
+<span class="c1">#include &lt;stdio.h&gt;</span>
+<span class="c1">#include &quot;cublas_v2.h&quot;</span>
+<span class="c1">#define IDX2C(i,j,ld) (((j)*( ld ))+( i ))</span>
+<span class="c1">#define m 6 // a - mxk matrix</span>
+<span class="c1">#define n 4 // b - kxn matrix</span>
+<span class="c1">#define k 5 // c - mxn matrix</span>
+<span class="nb">int</span> <span class="n">main</span><span class="p">(</span><span class="n">void</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">cublasHandle_t</span> <span class="n">handle</span><span class="p">;</span> <span class="o">//</span> <span class="n">CUBLAS</span> <span class="n">context</span>
+	<span class="nb">int</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">;</span> <span class="o">//</span> <span class="n">i</span><span class="o">-</span><span class="n">row</span> <span class="n">index</span> <span class="p">,</span><span class="n">j</span><span class="o">-</span> <span class="n">column</span> <span class="n">index</span>
+	<span class="nb">float</span><span class="o">*</span> <span class="n">a</span><span class="p">;</span> <span class="o">//</span> <span class="n">mxk</span> <span class="n">matrix</span>
+	<span class="nb">float</span><span class="o">*</span> <span class="n">b</span><span class="p">;</span> <span class="o">//</span> <span class="n">kxn</span> <span class="n">matrix</span>
+	<span class="nb">float</span><span class="o">*</span> <span class="n">c</span><span class="p">;</span> <span class="o">//</span> <span class="n">mxn</span> <span class="n">matrix</span>
+	<span class="o">//</span> <span class="n">unified</span> <span class="n">memory</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span>
+	<span class="n">cudaMallocManaged</span><span class="p">(</span><span class="o">&amp;</span><span class="n">a</span><span class="p">,</span> <span class="n">m</span><span class="o">*</span><span class="n">k</span> <span class="o">*</span> <span class="n">sizeof</span><span class="p">(</span><span class="nb">float</span><span class="p">));</span> 
+	<span class="n">cudaMallocManaged</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="p">,</span> <span class="n">k</span><span class="o">*</span><span class="n">n</span> <span class="o">*</span> <span class="n">sizeof</span><span class="p">(</span><span class="nb">float</span><span class="p">));</span>
+	<span class="n">cudaMallocManaged</span><span class="p">(</span><span class="o">&amp;</span><span class="n">c</span><span class="p">,</span> <span class="n">m</span><span class="o">*</span><span class="n">n</span> <span class="o">*</span> <span class="n">sizeof</span><span class="p">(</span><span class="nb">float</span><span class="p">));</span>
+	<span class="o">//</span> <span class="n">define</span> <span class="n">an</span> <span class="n">mxk</span> <span class="n">matrix</span> <span class="n">a</span> <span class="n">column</span> <span class="n">by</span> <span class="n">column</span>
+	<span class="nb">int</span> <span class="n">ind</span> <span class="o">=</span> <span class="mi">11</span><span class="p">;</span> <span class="o">//</span> <span class="n">a</span><span class="p">:</span>
+	<span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">j</span> <span class="o">&lt;</span> <span class="n">k</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span> 		  <span class="o">//</span> <span class="mi">11</span> <span class="p">,</span><span class="mi">17</span> <span class="p">,</span><span class="mi">23</span> <span class="p">,</span><span class="mi">29</span> <span class="p">,</span><span class="mi">35</span>
+		<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span> 	  <span class="o">//</span> <span class="mi">12</span> <span class="p">,</span><span class="mi">18</span> <span class="p">,</span><span class="mi">24</span> <span class="p">,</span><span class="mi">30</span> <span class="p">,</span><span class="mi">36</span>
+		<span class="n">a</span><span class="p">[</span><span class="n">IDX2C</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">m</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="n">ind</span><span class="o">++</span><span class="p">;</span> <span class="o">//</span> <span class="mi">13</span> <span class="p">,</span><span class="mi">19</span> <span class="p">,</span><span class="mi">25</span> <span class="p">,</span><span class="mi">31</span> <span class="p">,</span><span class="mi">37</span>
+		<span class="p">}</span> 				  <span class="o">//</span> <span class="mi">14</span> <span class="p">,</span><span class="mi">20</span> <span class="p">,</span><span class="mi">26</span> <span class="p">,</span><span class="mi">32</span> <span class="p">,</span><span class="mi">38</span>
+	<span class="p">}</span> 					  <span class="o">//</span> <span class="mi">15</span> <span class="p">,</span><span class="mi">21</span> <span class="p">,</span><span class="mi">27</span> <span class="p">,</span><span class="mi">33</span> <span class="p">,</span><span class="mi">39</span>
+						  <span class="o">//</span> <span class="mi">16</span> <span class="p">,</span><span class="mi">22</span> <span class="p">,</span><span class="mi">28</span> <span class="p">,</span><span class="mi">34</span> <span class="p">,</span><span class="mi">40</span>
+	<span class="o">//</span> <span class="nb">print</span> <span class="n">a</span> <span class="n">row</span> <span class="n">by</span> <span class="n">row</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s2">&quot;a:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+	<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">j</span> <span class="o">&lt;</span> <span class="n">k</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">printf</span><span class="p">(</span><span class="s2">&quot; </span><span class="si">%5.0f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="n">IDX2C</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">m</span><span class="p">)]);</span>
+		<span class="p">}</span>
+		<span class="n">printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+	<span class="p">}</span>
+	<span class="o">//</span> <span class="n">define</span> <span class="n">a</span> <span class="n">kxn</span> <span class="n">matrix</span> <span class="n">b</span> <span class="n">column</span> <span class="n">by</span> <span class="n">column</span>
+	<span class="n">ind</span> <span class="o">=</span> <span class="mi">11</span><span class="p">;</span> <span class="o">//</span> <span class="n">b</span><span class="p">:</span>
+	<span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">j</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>  			  <span class="o">//</span> <span class="mi">11</span> <span class="p">,</span><span class="mi">16</span> <span class="p">,</span><span class="mi">21</span> <span class="p">,</span><span class="mi">26</span>
+		<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">k</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span> 		  <span class="o">//</span> <span class="mi">12</span> <span class="p">,</span><span class="mi">17</span> <span class="p">,</span><span class="mi">22</span> <span class="p">,</span><span class="mi">27</span>
+			<span class="n">b</span><span class="p">[</span><span class="n">IDX2C</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="n">ind</span><span class="o">++</span><span class="p">;</span> <span class="o">//</span> <span class="mi">13</span> <span class="p">,</span><span class="mi">18</span> <span class="p">,</span><span class="mi">23</span> <span class="p">,</span><span class="mi">28</span>
+		<span class="p">}</span> 				   	  <span class="o">//</span> <span class="mi">14</span> <span class="p">,</span><span class="mi">19</span> <span class="p">,</span><span class="mi">24</span> <span class="p">,</span><span class="mi">29</span>
+	<span class="p">}</span> 						  <span class="o">//</span> <span class="mi">15</span> <span class="p">,</span><span class="mi">20</span> <span class="p">,</span><span class="mi">25</span> <span class="p">,</span><span class="mi">30</span>
+	<span class="o">//</span> <span class="nb">print</span> <span class="n">b</span> <span class="n">row</span> <span class="n">by</span> <span class="n">row</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s2">&quot;b:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+	<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">k</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">j</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">printf</span><span class="p">(</span><span class="s2">&quot; </span><span class="si">%5.0f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="n">IDX2C</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">)]);</span>
+		<span class="p">}</span>
+		<span class="n">printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+	<span class="p">}</span>
+	<span class="o">//</span> <span class="n">define</span> <span class="n">an</span> <span class="n">mxn</span> <span class="n">matrix</span> <span class="n">c</span> <span class="n">column</span> <span class="n">by</span> <span class="n">column</span>
+	<span class="n">ind</span> <span class="o">=</span> <span class="mi">11</span><span class="p">;</span> <span class="o">//</span> <span class="n">c</span><span class="p">:</span>
+	<span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">j</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>  			  <span class="o">//</span> <span class="mi">11</span> <span class="p">,</span><span class="mi">17</span> <span class="p">,</span><span class="mi">23</span> <span class="p">,</span><span class="mi">29</span>
+		<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span> 		  <span class="o">//</span> <span class="mi">12</span> <span class="p">,</span><span class="mi">18</span> <span class="p">,</span><span class="mi">24</span> <span class="p">,</span><span class="mi">30</span>
+			<span class="n">c</span><span class="p">[</span><span class="n">IDX2C</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">m</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="n">ind</span><span class="o">++</span><span class="p">;</span> <span class="o">//</span> <span class="mi">13</span> <span class="p">,</span><span class="mi">19</span> <span class="p">,</span><span class="mi">25</span> <span class="p">,</span><span class="mi">31</span>
+		<span class="p">}</span>  					  <span class="o">//</span> <span class="mi">14</span> <span class="p">,</span><span class="mi">20</span> <span class="p">,</span><span class="mi">26</span> <span class="p">,</span><span class="mi">32</span>
+	<span class="p">}</span> 						  <span class="o">//</span> <span class="mi">15</span> <span class="p">,</span><span class="mi">21</span> <span class="p">,</span><span class="mi">27</span> <span class="p">,</span><span class="mi">33</span>
+							  <span class="o">//</span> <span class="mi">16</span> <span class="p">,</span><span class="mi">22</span> <span class="p">,</span><span class="mi">28</span> <span class="p">,</span><span class="mi">34</span>
+	<span class="o">//</span> <span class="nb">print</span> <span class="n">c</span> <span class="n">row</span> <span class="n">by</span> <span class="n">row</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s2">&quot;c:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+	<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">j</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">printf</span><span class="p">(</span><span class="s2">&quot; </span><span class="si">%5.0f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">c</span><span class="p">[</span><span class="n">IDX2C</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">m</span><span class="p">)]);</span>
+		<span class="p">}</span>
+		<span class="n">printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+	<span class="p">}</span>
+	<span class="n">cublasCreate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">handle</span><span class="p">);</span> <span class="o">//</span> <span class="n">initialize</span> <span class="n">CUBLAS</span> <span class="n">context</span>
+	<span class="nb">float</span> <span class="n">al</span> <span class="o">=</span> <span class="mf">1.0</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="n">al</span> <span class="o">=</span><span class="mi">1</span>
+	<span class="nb">float</span> <span class="n">bet</span> <span class="o">=</span> <span class="mf">1.0</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="n">bet</span> <span class="o">=</span><span class="mi">1</span>
+	<span class="o">//</span> <span class="n">matrix</span> <span class="o">-</span> <span class="n">matrix</span> <span class="n">multiplication</span> <span class="p">:</span> <span class="n">c</span> <span class="o">=</span> <span class="n">al</span><span class="o">*</span><span class="n">a</span><span class="o">*</span><span class="n">b</span> <span class="o">+</span> <span class="n">bet</span> <span class="o">*</span><span class="n">c</span>
+	<span class="o">//</span> <span class="n">a</span> <span class="o">-</span><span class="n">mxk</span> <span class="n">matrix</span> <span class="p">,</span> <span class="n">b</span> <span class="o">-</span><span class="n">kxn</span> <span class="n">matrix</span> <span class="p">,</span> <span class="n">c</span> <span class="o">-</span><span class="n">mxn</span> <span class="n">matrix</span> <span class="p">;</span>
+	<span class="o">//</span> <span class="n">al</span> <span class="p">,</span><span class="n">bet</span> <span class="o">-</span><span class="n">scalars</span>
+	<span class="n">cublasSgemm</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">CUBLAS_OP_N</span><span class="p">,</span> <span class="n">CUBLAS_OP_N</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">al</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span>
+		<span class="o">&amp;</span><span class="n">bet</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">m</span><span class="p">);</span>
+	<span class="n">cudaDeviceSynchronize</span><span class="p">();</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s2">&quot;c after Sgemm :</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+	<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">j</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">printf</span><span class="p">(</span><span class="s2">&quot; </span><span class="si">%7.0f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">c</span><span class="p">[</span><span class="n">IDX2C</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">m</span><span class="p">)]);</span> <span class="o">//</span> <span class="nb">print</span> <span class="n">c</span> <span class="n">after</span> <span class="n">Sgemm</span>
+		<span class="p">}</span>
+		<span class="n">printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+	<span class="p">}</span>
+	<span class="n">cudaFree</span><span class="p">(</span><span class="n">a</span><span class="p">);</span> <span class="o">//</span> <span class="n">free</span> <span class="n">memory</span>
+	<span class="n">cudaFree</span><span class="p">(</span><span class="n">b</span><span class="p">);</span> <span class="o">//</span> <span class="n">free</span> <span class="n">memory</span>
+	<span class="n">cudaFree</span><span class="p">(</span><span class="n">c</span><span class="p">);</span> <span class="o">//</span> <span class="n">free</span> <span class="n">memory</span>
+	<span class="n">cublasDestroy</span><span class="p">(</span><span class="n">handle</span><span class="p">);</span> <span class="o">//</span> <span class="n">destroy</span> <span class="n">CUBLAS</span> <span class="n">context</span>
+	<span class="k">return</span> <span class="n">EXIT_SUCCESS</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="looking-more-carefully-at-unified-memory">
+<h2>Looking more carefully at unified memory<a class="headerlink" href="#looking-more-carefully-at-unified-memory" title="Permalink to this headline">¶</a></h2>
+<p>If we are going to generate large matrices for our tests, it is sensible
+to do the generation / initialisation on the GPU. This requires a &#8220;slight&#8221;
+diversion to learn about kernel functions and within GPU parallelism.</p>
+<p>This first example is modified from Mark Harris&#8217;s code in <a class="reference external" href="https://developer.nvidia.com/blog/even-easier-introduction-cuda/">https://developer.nvidia.com/blog/even-easier-introduction-cuda/</a> to include initialisation on the GPU.
+The code does a 1-D partitioning of the work among thread groups.</p>
+<p>Note that the kernel functions init and add run on the GPU.  CUDA GPUs contain a number of threads, each of which can perform a computation independently. In addition,
+there is a higher level of parallelism that boosts performance further.</p>
+<p>Quoting from Harris,</p>
+<p>&#8220;CUDA GPUs have many parallel processors grouped into Streaming Multiprocessors, or SMs. Each SM can run multiple concurrent thread blocks.
+As an example, a Tesla P100 GPU based on the Pascal GPU Architecture has 56 SMs, each capable of supporting up to 2048 active threads.&#8221;</p>
+<p>Without direction, all threads execute precisely the same code, effectivly serial performance. Parallel performance requires tying particular pieces of work to
+a specific thread id and doing this concurrently across all threads.</p>
+<p>Again, from Harris: &#8220;CUDA C++ provides keywords that let kernels get the indices of the running threads.
+Specifically, <code class="docutils literal"><span class="pre">threadIdx.x</span></code> contains the index of the current thread within its block, and <code class="docutils literal"><span class="pre">blockDim.x</span></code> contains the number of threads in the block.&#8221;</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>    <span class="o">//</span> <span class="n">From</span>  <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">developer</span><span class="o">.</span><span class="n">nvidia</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">blog</span><span class="o">/</span><span class="n">unified</span><span class="o">-</span><span class="n">memory</span><span class="o">-</span><span class="n">cuda</span><span class="o">-</span><span class="n">beginners</span><span class="o">/</span>  <span class="n">by</span> <span class="n">Mark</span> <span class="n">Harris</span><span class="p">,</span> <span class="mi">2017</span>  
+
+    <span class="c1">#include &lt;iostream&gt;</span>
+    <span class="c1">#include &lt;math.h&gt;</span>
+    <span class="c1">#include &lt;stdio.h&gt; </span>
+    <span class="o">//</span> <span class="n">CUDA</span> <span class="n">kernel</span> <span class="n">to</span> <span class="n">add</span> <span class="n">elements</span> <span class="n">of</span> <span class="n">two</span> <span class="mi">1</span><span class="n">D</span> <span class="n">arrays</span> <span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">e</span><span class="o">.</span> <span class="n">vectors</span><span class="p">)</span>
+    <span class="n">__global__</span>
+    <span class="n">void</span> <span class="n">add</span><span class="p">(</span><span class="nb">int</span> <span class="n">n</span><span class="p">,</span> <span class="nb">float</span> <span class="o">*</span><span class="n">x</span><span class="p">,</span> <span class="nb">float</span> <span class="o">*</span><span class="n">y</span><span class="p">)</span>
+    <span class="p">{</span>
+      <span class="nb">int</span> <span class="n">index</span> <span class="o">=</span> <span class="n">blockIdx</span><span class="o">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">blockDim</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">threadIdx</span><span class="o">.</span><span class="n">x</span><span class="p">;</span>
+      <span class="nb">int</span> <span class="n">stride</span> <span class="o">=</span> <span class="n">blockDim</span><span class="o">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">gridDim</span><span class="o">.</span><span class="n">x</span><span class="p">;</span>
+      <span class="k">for</span> <span class="p">(</span><span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">index</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span> <span class="o">+=</span> <span class="n">stride</span><span class="p">)</span>
+        <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+    <span class="p">}</span>
+    <span class="n">__global__</span> <span class="n">void</span> <span class="n">init</span><span class="p">(</span><span class="nb">int</span> <span class="n">n</span><span class="p">,</span> <span class="nb">float</span> <span class="o">*</span><span class="n">x</span><span class="p">,</span> <span class="nb">float</span> <span class="o">*</span><span class="n">y</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nb">int</span> <span class="n">index</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">blockIdx</span><span class="o">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">blockDim</span><span class="o">.</span><span class="n">x</span><span class="p">;</span>
+    <span class="nb">int</span> <span class="n">stride</span> <span class="o">=</span> <span class="n">blockDim</span><span class="o">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">gridDim</span><span class="o">.</span><span class="n">x</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">index</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span> <span class="o">+=</span> <span class="n">stride</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span><span class="n">f</span><span class="p">;</span>
+      <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span><span class="n">f</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="nb">int</span> <span class="n">main</span><span class="p">(</span><span class="n">void</span><span class="p">)</span>
+    <span class="p">{</span>
+      <span class="nb">int</span> <span class="n">N</span> <span class="o">=</span> <span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">20</span><span class="p">;</span>
+      <span class="nb">float</span> <span class="o">*</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">y</span><span class="p">;</span>
+      <span class="nb">int</span> <span class="n">device</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+
+      <span class="n">printf</span><span class="p">(</span><span class="s2">&quot; N </span><span class="si">%d</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">N</span><span class="p">);</span>
+      <span class="o">//</span> <span class="n">Allocate</span> <span class="n">Unified</span> <span class="n">Memory</span> <span class="o">--</span> <span class="n">accessible</span> <span class="kn">from</span> <span class="nn">CPU</span> <span class="ow">or</span> <span class="n">GPU</span>
+      <span class="n">cudaMallocManaged</span><span class="p">(</span><span class="o">&amp;</span><span class="n">x</span><span class="p">,</span> <span class="n">N</span><span class="o">*</span><span class="n">sizeof</span><span class="p">(</span><span class="nb">float</span><span class="p">));</span>
+      <span class="n">cudaMallocManaged</span><span class="p">(</span><span class="o">&amp;</span><span class="n">y</span><span class="p">,</span> <span class="n">N</span><span class="o">*</span><span class="n">sizeof</span><span class="p">(</span><span class="nb">float</span><span class="p">));</span>
+      <span class="n">cudaGetDevice</span><span class="p">(</span><span class="o">&amp;</span><span class="n">device</span><span class="p">);</span>
+      <span class="n">cudaMemPrefetchAsync</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">N</span><span class="o">*</span><span class="n">sizeof</span><span class="p">(</span><span class="nb">float</span><span class="p">),</span> <span class="n">device</span><span class="p">,</span> <span class="n">NULL</span><span class="p">);</span>
+      <span class="n">cudaMemPrefetchAsync</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">N</span><span class="o">*</span><span class="n">sizeof</span><span class="p">(</span><span class="nb">float</span><span class="p">),</span> <span class="n">device</span><span class="p">,</span> <span class="n">NULL</span><span class="p">);</span>    
+
+     
+      <span class="o">//</span> <span class="n">Launch</span> <span class="n">kernel</span> <span class="n">on</span> <span class="mi">1</span><span class="n">M</span> <span class="n">elements</span> <span class="n">on</span> <span class="n">the</span> <span class="n">GPU</span>
+      <span class="nb">int</span> <span class="n">blockSize</span> <span class="o">=</span> <span class="mi">256</span><span class="p">;</span>
+      <span class="nb">int</span> <span class="n">numBlocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">N</span> <span class="o">+</span> <span class="n">blockSize</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">blockSize</span><span class="p">;</span>
+      <span class="n">init</span><span class="o">&lt;&lt;&lt;</span><span class="n">numBlocks</span><span class="p">,</span> <span class="n">blockSize</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">);</span>
+      <span class="n">add</span><span class="o">&lt;&lt;&lt;</span><span class="n">numBlocks</span><span class="p">,</span> <span class="n">blockSize</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">);</span>
+     
+      <span class="o">//</span> <span class="n">Wait</span> <span class="k">for</span> <span class="n">GPU</span> <span class="n">to</span> <span class="n">finish</span> <span class="n">before</span> <span class="n">accessing</span> <span class="n">on</span> <span class="n">host</span>
+      <span class="n">cudaDeviceSynchronize</span><span class="p">();</span>
+     
+      <span class="o">//</span> <span class="n">Check</span> <span class="k">for</span> <span class="n">errors</span> <span class="p">(</span><span class="nb">all</span> <span class="n">values</span> <span class="n">should</span> <span class="n">be</span> <span class="mf">3.0</span><span class="n">f</span><span class="p">)</span>
+      <span class="nb">float</span> <span class="n">maxError</span> <span class="o">=</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">;</span>
+      <span class="k">for</span> <span class="p">(</span><span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">N</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="n">maxError</span> <span class="o">=</span> <span class="n">fmax</span><span class="p">(</span><span class="n">maxError</span><span class="p">,</span> <span class="n">fabs</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="mf">3.0</span><span class="n">f</span><span class="p">));</span>
+      <span class="n">std</span><span class="p">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s2">&quot;Max error: &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">maxError</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="p">::</span><span class="n">endl</span><span class="p">;</span>
+     
+      <span class="o">//</span> <span class="n">Free</span> <span class="n">memory</span>
+      <span class="n">cudaFree</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+      <span class="n">cudaFree</span><span class="p">(</span><span class="n">y</span><span class="p">);</span>
+     
+      <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+</pre></div>
+</div>
+<p>It is worth examining a few parts of this code in more detail.</p>
+<p>Notice the invocation of the kernel functions involves passing execution configuration specifying how many blocks of threads are used (referenced internally in a kernel
+function as the gridDim) and the size of each block of threads (referenced internally in a kernel
+function as the blockDim). Thread blocks have to have a multiple of 32 threads, with a maximum of 1024 threads in a block.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="nb">int</span> <span class="n">blockSize</span> <span class="o">=</span> <span class="mi">256</span><span class="p">;</span>
+<span class="nb">int</span> <span class="n">numBlocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">N</span> <span class="o">+</span> <span class="n">blockSize</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">blockSize</span><span class="p">;</span>
+<span class="n">init</span><span class="o">&lt;&lt;&lt;</span><span class="n">numBlocks</span><span class="p">,</span> <span class="n">blockSize</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">);</span>
+<span class="n">add</span><span class="o">&lt;&lt;&lt;</span><span class="n">numBlocks</span><span class="p">,</span> <span class="n">blockSize</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The specification of the gridDim (numBlocks) and  blockDim (blockSize) for the kernel function is passed via metaparameters enclosed with <code class="docutils literal"><span class="pre">&lt;&lt;&lt;</span></code> and <code class="docutils literal"><span class="pre">&gt;&gt;&gt;</span></code>. In this
+example the int values are coerced into the underlying dim3 type, which can take 3 values, one value for each dimension of the gridDim amd blockDim. If only one
+dimension is specified, the other two values are defaulted to 1. The need to preprocess such calls is part of the reason that CUDA C++ routines normally have the
+extension <code class="docutils literal"><span class="pre">.cu</span></code>. This alerts the CUDA nvcc compiler to the need for preprocessing.</p>
+<p>In the kernel functions, there are other predefined identifiers to assist in specifying unique thread ids.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="nb">int</span> <span class="n">index</span> <span class="o">=</span> <span class="n">blockIdx</span><span class="o">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">blockDim</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">threadIdx</span><span class="o">.</span><span class="n">x</span><span class="p">;</span>
+<span class="nb">int</span> <span class="n">stride</span> <span class="o">=</span> <span class="n">blockDim</span><span class="o">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">gridDim</span><span class="o">.</span><span class="n">x</span><span class="p">;</span>
+<span class="k">for</span> <span class="p">(</span><span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">index</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span> <span class="o">+=</span> <span class="n">stride</span><span class="p">)</span>
+  <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+</pre></div>
+</div>
+<p>Provided the value of <code class="docutils literal"><span class="pre">gridDim.x</span></code> is sufficiently large, that is <code class="docutils literal"><span class="pre">blockDim.x</span> <span class="pre">*</span> <span class="pre">gridDim.x</span> <span class="pre">&gt;=</span> <span class="pre">n</span></code> the loop is effectively executed once with <code class="docutils literal"><span class="pre">i</span> <span class="pre">==</span> <span class="pre">index</span></code>. This
+loop can therefore be considered as defensive programming to ensure that the full range of the array is covered exactly once by the pool of thread blocks. To confirm, in
+this case:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="mi">1048576</span>
+<span class="n">blockDim</span> <span class="o">=</span> <span class="mi">256</span>
+<span class="n">gridDim</span> <span class="o">=</span> <span class="n">n</span> <span class="o">/</span> <span class="n">blockDim</span> <span class="o">=</span> <span class="mi">4096</span>
+<span class="n">stride</span> <span class="o">=</span> <span class="n">n</span>
+</pre></div>
+</div>
+<p>There are alternative ways to protect the computations from trying to access past the end of arrays. A common alternative is given in the next example. The critical thing
+to note is that by defining the number of grid blocks as a function of the array dimension and  thread pool size, it is possible to treat the array computation as being
+completely parallel in its execution. The reality is that some thread scheduling will be needed, but this is performed seamlessly by the GPU, in a fashion that
+is analogous to loop partitioning with OpenMP.</p>
+<p>One important comment about kernel functions. The kernel functions are asynchronous with the CPU. It is therefore essential to impose a synchronisation between the
+GPU and CPU via the command <code class="docutils literal"><span class="pre">cudaDeviceSynchronize()</span></code> before results are accessed from the CPU side.</p>
+<p>This example also exploits another feature of unified memory. By default, entities are created in the CPU memory and migrated on demand to GPU memory. This can be
+inefficient if we know in advance that the entities are going to be initialised and manipulated on the GPU. The command <code class="docutils literal"><span class="pre">cudaMemPrefetchAsync</span></code> can be used to specify
+that a data area is to created on a particular GPU.</p>
+<p>With matrices,
+it is more natural to do a 2-D partitioning. Things are slightly more
+complicated, but the basic idea scales fairly well. Note that rather than strided access across both problem dimensions, this code just checks that the array indices are
+in range.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">Based</span> <span class="n">heavily</span> <span class="n">on</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">developer</span><span class="o">.</span><span class="n">nvidia</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">blog</span><span class="o">/</span><span class="n">cuda</span><span class="o">-</span><span class="n">refresher</span><span class="o">-</span><span class="n">cuda</span><span class="o">-</span><span class="n">programming</span><span class="o">-</span><span class="n">model</span><span class="o">/</span>
+<span class="c1">#include &lt;stdio.h&gt; </span>
+<span class="n">const</span> <span class="nb">int</span> <span class="n">N</span> <span class="o">=</span> <span class="mi">1024</span><span class="p">;</span> <span class="n">const</span> <span class="nb">int</span> <span class="n">blocksize</span> <span class="o">=</span> <span class="mi">16</span><span class="p">;</span>
+
+<span class="n">__global__</span> <span class="n">void</span> <span class="n">add_matrix</span><span class="p">(</span> <span class="nb">float</span> <span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="nb">float</span> <span class="o">*</span><span class="n">b</span><span class="p">,</span> <span class="nb">float</span> <span class="o">*</span><span class="n">c</span><span class="p">,</span> <span class="nb">int</span> <span class="n">N</span><span class="p">)</span> <span class="p">{</span>
+<span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">blockIdx</span><span class="o">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">blockDim</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">threadIdx</span><span class="o">.</span><span class="n">x</span><span class="p">;</span> <span class="o">//</span> <span class="n">blockIdx</span><span class="p">,</span> <span class="n">blockDim</span> <span class="ow">and</span> <span class="n">threadIdx</span> <span class="n">are</span> <span class="n">predefined</span>
+<span class="nb">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">blockIdx</span><span class="o">.</span><span class="n">y</span> <span class="o">*</span> <span class="n">blockDim</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">threadIdx</span><span class="o">.</span><span class="n">y</span><span class="p">;</span> <span class="o">//</span> <span class="n">variables</span> <span class="o">-</span> <span class="n">initialised</span> <span class="kn">from</span> <span class="nn">meta</span><span class="o">-</span><span class="n">arguments</span>
+<span class="nb">int</span> <span class="n">index</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="n">j</span><span class="o">*</span><span class="n">N</span><span class="p">;</span>
+<span class="k">if</span> <span class="p">(</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">N</span> <span class="o">&amp;&amp;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">N</span> <span class="p">)</span> <span class="o">//</span> <span class="n">Keep</span> <span class="n">indices</span> <span class="ow">in</span> <span class="nb">range</span> 
+  <span class="n">c</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">+</span> <span class="n">b</span><span class="p">[</span><span class="n">index</span><span class="p">];</span> 
+<span class="p">}</span>
+
+<span class="nb">int</span> <span class="n">main</span><span class="p">(</span><span class="n">void</span><span class="p">){</span>
+<span class="n">const</span> <span class="nb">int</span> <span class="n">size</span> <span class="o">=</span> <span class="n">N</span><span class="o">*</span><span class="n">N</span><span class="o">*</span><span class="n">sizeof</span><span class="p">(</span><span class="nb">float</span><span class="p">);</span>
+<span class="nb">float</span> <span class="o">*</span><span class="n">a</span> <span class="p">;</span> <span class="nb">float</span> <span class="o">*</span><span class="n">b</span><span class="p">;</span> <span class="nb">float</span> <span class="o">*</span><span class="n">c</span> <span class="p">;</span>
+<span class="nb">float</span> <span class="n">maxError</span> <span class="o">=</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">;</span>
+<span class="n">cudaMallocManaged</span><span class="p">(</span> <span class="p">(</span><span class="n">void</span><span class="o">**</span><span class="p">)</span><span class="o">&amp;</span><span class="n">a</span><span class="p">,</span> <span class="n">size</span> <span class="p">);</span>
+<span class="n">cudaMallocManaged</span><span class="p">(</span> <span class="p">(</span><span class="n">void</span><span class="o">**</span><span class="p">)</span><span class="o">&amp;</span><span class="n">b</span><span class="p">,</span> <span class="n">size</span> <span class="p">);</span> 
+<span class="n">cudaMallocManaged</span><span class="p">(</span> <span class="p">(</span><span class="n">void</span><span class="o">**</span><span class="p">)</span><span class="o">&amp;</span><span class="n">c</span><span class="p">,</span> <span class="n">size</span> <span class="p">);</span>
+<span class="k">for</span> <span class="p">(</span> <span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">N</span><span class="o">*</span><span class="n">N</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span> <span class="p">)</span> <span class="p">{</span>
+  <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span><span class="n">f</span><span class="p">;</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">3.5</span><span class="n">f</span><span class="p">;</span> <span class="p">}</span>
+
+<span class="n">dim3</span> <span class="n">dimBlock</span><span class="p">(</span> <span class="n">blocksize</span><span class="p">,</span> <span class="n">blocksize</span> <span class="p">);</span>     <span class="o">//</span> <span class="n">dim3</span> <span class="n">structure</span> <span class="n">to</span> <span class="n">deal</span> <span class="k">with</span> <span class="mi">1</span><span class="n">D</span><span class="p">,</span> <span class="mi">2</span><span class="n">D</span> <span class="ow">or</span> <span class="mi">3</span><span class="n">D</span> <span class="n">thread</span> <span class="n">collections</span><span class="o">.</span>
+<span class="n">dim3</span> <span class="n">dimGrid</span><span class="p">(</span> <span class="n">N</span><span class="o">/</span><span class="n">dimBlock</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">N</span><span class="o">/</span><span class="n">dimBlock</span><span class="o">.</span><span class="n">y</span><span class="p">);</span> <span class="o">//</span> <span class="n">dimBlock</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">first</span> <span class="n">dimension</span><span class="p">,</span> <span class="n">dimBlock</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">second</span> <span class="n">dimension</span>
+					   <span class="o">//</span> <span class="n">dimBlock</span><span class="o">.</span><span class="n">z</span> <span class="k">for</span> <span class="n">third</span> <span class="n">dimension</span> <span class="p">(</span><span class="ow">not</span> <span class="n">used</span><span class="p">)</span>
+<span class="n">add_matrix</span><span class="o">&lt;&lt;&lt;</span><span class="n">dimGrid</span><span class="p">,</span> <span class="n">dimBlock</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">N</span><span class="p">);</span>    <span class="o">//</span> <span class="n">Note</span> <span class="n">meta</span> <span class="n">arguments</span> <span class="n">that</span> <span class="k">pass</span> <span class="n">information</span> <span class="n">on</span> 
+						   <span class="o">//</span> <span class="n">Number</span> <span class="n">of</span> <span class="n">thread</span> <span class="n">groups</span> <span class="p">(</span><span class="n">Grid</span><span class="p">)</span> <span class="ow">and</span> <span class="n">number</span> <span class="n">of</span>
+						   <span class="o">//</span> <span class="n">threads</span> <span class="ow">in</span> <span class="n">each</span> <span class="n">group</span> <span class="p">(</span><span class="n">Block</span><span class="p">)</span><span class="o">.</span>
+
+<span class="o">//</span> <span class="n">Wait</span> <span class="k">for</span> <span class="n">GPU</span> <span class="n">to</span> <span class="n">finish</span> <span class="n">before</span> <span class="n">accessing</span> <span class="n">on</span> <span class="n">host</span> <span class="o">-</span> <span class="n">major</span> <span class="n">source</span> <span class="n">of</span> <span class="n">errors</span>
+      <span class="n">cudaDeviceSynchronize</span><span class="p">();</span>
+					 	   
+
+<span class="k">for</span> <span class="p">(</span><span class="nb">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">N</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">){</span>		
+ <span class="k">for</span> <span class="p">(</span><span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">N</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+     <span class="n">maxError</span> <span class="o">=</span> <span class="n">fmax</span><span class="p">(</span><span class="n">maxError</span><span class="p">,</span> <span class="n">fabs</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">j</span><span class="o">*</span><span class="n">N</span><span class="p">]</span><span class="o">-</span><span class="mf">4.5</span><span class="n">f</span><span class="p">));</span>
+ <span class="p">}</span>
+<span class="p">}</span>
+<span class="n">printf</span><span class="p">(</span><span class="s2">&quot;Max error: </span><span class="si">%.16f</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">maxError</span> <span class="p">);</span>
+
+<span class="n">cudaFree</span><span class="p">(</span> <span class="n">a</span> <span class="p">);</span> <span class="n">cudaFree</span><span class="p">(</span> <span class="n">b</span> <span class="p">);</span> <span class="n">cudaFree</span><span class="p">(</span> <span class="n">c</span> <span class="p">);</span> <span class="o">//</span> <span class="n">CLEAN</span> <span class="n">UP</span><span class="p">,</span> <span class="n">RETURN</span>
+<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="putting-the-pieces-together">
+<h2>Putting the pieces together<a class="headerlink" href="#putting-the-pieces-together" title="Permalink to this headline">¶</a></h2>
+<p>We are now at the point where we can do a larger test. Matrices a and b are
+such that, when square, their product is the identity matrix (ones on the diagonal
+and zeroes elsewhere). Matrix c is defined as an
+identity matrix, so the final result is a matrix with two&#8217;s down its
+diagonal. I cannot find a reference to the specific formulas used for these matrices, but mathematically we have:</p>
+<div class="math">
+\[a_{ij} = b_{ij} = \sqrt{2 \over (m+1)} \times sin \left({(i+1) \times (j+1) \times \pi \over m+1}\right) \; i=0,..,m-1,\;  j=0,..,m-1\]</div>
+<p>Notice in the kernel function <code class="docutils literal"><span class="pre">initmatrix</span></code> we have  redundant calculation, but the threads would have needed to wait for this computation anyway:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pi</span> <span class="o">=</span> <span class="n">two</span><span class="o">*</span><span class="n">asin</span><span class="p">(</span><span class="n">one</span><span class="p">);</span>
+<span class="n">rkplus1</span> <span class="o">=</span> <span class="n">one</span><span class="o">/</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="o">+</span> <span class="n">one</span><span class="p">);</span>
+<span class="n">rk</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">two</span><span class="o">*</span><span class="n">rkplus1</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span> <span class="o">&amp;&amp;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">x</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">rk</span><span class="o">*</span><span class="n">__sinf</span><span class="p">((</span><span class="nb">float</span><span class="p">)(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="nb">float</span><span class="p">)(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">rkplus1</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The full code is below:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">//</span> <span class="n">nvcc</span> <span class="mi">036</span> <span class="n">sgemm</span><span class="o">.</span><span class="n">cu</span> <span class="o">-</span><span class="n">lcublas</span>
+<span class="c1">#include &lt;stdio.h&gt;</span>
+<span class="c1">#include &lt;stdlib.h&gt;</span>
+<span class="c1">#include &lt;time.h&gt;</span>
+<span class="c1">#include &lt;math.h&gt;</span>
+<span class="c1">#include &lt;cuda_runtime.h&gt;</span>
+<span class="c1">#include &quot;cublas_v2.h&quot;</span>
+
+
+<span class="c1">#define printlim 10</span>
+<span class="c1">#define BILLION 1000000000L</span>
+<span class="c1">#define IDX2C(i,j,ld) (((j)*( ld ))+( i ))</span>
+
+<span class="n">__global__</span>  <span class="n">void</span> <span class="n">initmatrix</span><span class="p">(</span><span class="nb">int</span> <span class="n">m</span><span class="p">,</span> <span class="nb">int</span> <span class="n">n</span><span class="p">,</span> <span class="nb">float</span> <span class="o">*</span><span class="n">x</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nb">float</span> <span class="n">rk</span><span class="p">,</span><span class="n">rkplus1</span><span class="p">,</span><span class="n">pi</span><span class="p">;</span>
+	<span class="nb">float</span> <span class="n">one</span><span class="o">=</span><span class="mf">1.0</span><span class="n">f</span><span class="p">;</span>
+	<span class="nb">float</span> <span class="n">two</span><span class="o">=</span><span class="mf">2.0</span><span class="n">f</span><span class="p">;</span>
+        <span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">blockIdx</span><span class="o">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">blockDim</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">threadIdx</span><span class="o">.</span><span class="n">x</span><span class="p">;</span>
+	<span class="nb">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">blockIdx</span><span class="o">.</span><span class="n">y</span> <span class="o">*</span> <span class="n">blockDim</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">threadIdx</span><span class="o">.</span><span class="n">y</span><span class="p">;</span>
+        <span class="n">long</span> <span class="n">index</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="n">j</span><span class="o">*</span><span class="n">m</span><span class="p">;</span>
+	<span class="n">pi</span> <span class="o">=</span> <span class="n">two</span><span class="o">*</span><span class="n">asin</span><span class="p">(</span><span class="n">one</span><span class="p">);</span>
+        <span class="n">rkplus1</span> <span class="o">=</span> <span class="n">one</span><span class="o">/</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="o">+</span> <span class="n">one</span><span class="p">);</span>  
+	<span class="n">rk</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">two</span><span class="o">*</span><span class="n">rkplus1</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span> <span class="o">&amp;&amp;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">)</span> <span class="p">{</span>
+	  <span class="n">x</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">rk</span><span class="o">*</span><span class="n">__sinf</span><span class="p">((</span><span class="nb">float</span><span class="p">)(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="nb">float</span><span class="p">)(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">rkplus1</span><span class="p">);</span>
+	   
+        <span class="p">}</span>
+     <span class="p">}</span>
+
+<span class="n">__global__</span>  <span class="n">void</span> <span class="n">initident</span><span class="p">(</span><span class="nb">int</span> <span class="n">m</span><span class="p">,</span> <span class="nb">int</span> <span class="n">n</span><span class="p">,</span> <span class="nb">float</span> <span class="o">*</span><span class="n">x</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">blockIdx</span><span class="o">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">blockDim</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">threadIdx</span><span class="o">.</span><span class="n">x</span><span class="p">;</span>
+	<span class="nb">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">blockIdx</span><span class="o">.</span><span class="n">y</span> <span class="o">*</span> <span class="n">blockDim</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">threadIdx</span><span class="o">.</span><span class="n">y</span><span class="p">;</span>
+        <span class="n">long</span> <span class="n">index</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="n">j</span><span class="o">*</span><span class="n">m</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span> <span class="o">&amp;&amp;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">)</span> <span class="p">{</span>
+	  <span class="n">x</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.e0</span><span class="p">;</span>
+	  <span class="k">if</span> <span class="p">(</span> <span class="n">i</span> <span class="o">==</span> <span class="n">j</span> <span class="p">)</span> <span class="n">x</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.e0</span><span class="p">;</span>
+        <span class="p">}</span>
+     <span class="p">}</span>
+
+
+<span class="nb">int</span> <span class="n">main</span><span class="p">(</span><span class="n">void</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">struct</span> <span class="n">timespec</span> <span class="n">start</span> <span class="p">,</span> <span class="n">stop</span> <span class="p">;</span> <span class="o">//</span> <span class="n">variables</span> <span class="k">for</span> <span class="n">timing</span>
+	<span class="n">double</span> <span class="n">accum</span> <span class="p">;</span> <span class="o">//</span> <span class="n">elapsed</span> <span class="n">time</span> <span class="n">variable</span>
+	<span class="n">cublasHandle_t</span> <span class="n">handle</span><span class="p">;</span> <span class="o">//</span> <span class="n">CUBLAS</span> <span class="n">context</span>	
+	<span class="nb">int</span> <span class="n">m</span><span class="o">=</span><span class="mi">20000</span><span class="p">;</span> <span class="o">//</span> <span class="c1">#defines in cuda call get the literal swapped in - invalid code</span>
+	<span class="nb">int</span> <span class="n">k</span><span class="o">=</span><span class="mi">20000</span><span class="p">;</span>
+	<span class="nb">int</span> <span class="n">n</span><span class="o">=</span><span class="mi">20000</span><span class="p">;</span>
+	<span class="nb">int</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">;</span> <span class="o">//</span> <span class="n">i</span><span class="o">-</span><span class="n">row</span> <span class="n">index</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span> <span class="n">column</span> <span class="n">index</span>
+	<span class="nb">float</span> <span class="o">*</span><span class="n">a</span><span class="p">;</span> <span class="o">//</span> <span class="n">mxk</span> <span class="n">matrix</span>
+	<span class="nb">float</span> <span class="o">*</span><span class="n">b</span><span class="p">;</span> <span class="o">//</span> <span class="n">kxn</span> <span class="n">matrix</span>
+	<span class="nb">float</span> <span class="o">*</span><span class="n">c</span><span class="p">;</span> <span class="o">//</span> <span class="n">mxn</span> <span class="n">matrix</span>
+        <span class="n">dim3</span> <span class="n">blockSize</span><span class="p">;</span>
+        <span class="n">dim3</span> <span class="n">numBlocks</span><span class="p">;</span>
+  	
+	<span class="o">//</span> <span class="n">unified</span> <span class="n">memory</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span>
+	<span class="n">cudaMallocManaged</span><span class="p">(</span><span class="o">&amp;</span><span class="n">a</span><span class="p">,</span> <span class="n">m</span><span class="o">*</span><span class="n">k</span> <span class="o">*</span> <span class="n">sizeof</span><span class="p">(</span><span class="n">cuComplex</span><span class="p">));</span>
+	<span class="n">cudaMallocManaged</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="p">,</span> <span class="n">k</span><span class="o">*</span><span class="n">n</span> <span class="o">*</span> <span class="n">sizeof</span><span class="p">(</span><span class="n">cuComplex</span><span class="p">));</span>
+	<span class="n">cudaMallocManaged</span><span class="p">(</span><span class="o">&amp;</span><span class="n">c</span><span class="p">,</span> <span class="n">m</span><span class="o">*</span><span class="n">n</span> <span class="o">*</span> <span class="n">sizeof</span><span class="p">(</span><span class="n">cuComplex</span><span class="p">));</span>
+	
+	<span class="n">clock_gettime</span> <span class="p">(</span> <span class="n">CLOCK_REALTIME</span> <span class="p">,</span><span class="o">&amp;</span><span class="n">start</span> <span class="p">);</span> <span class="o">//</span> <span class="n">timer</span> <span class="n">start</span>
+
+        <span class="n">blockSize</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">32</span><span class="p">;</span> <span class="o">//</span> <span class="n">Have</span> <span class="n">a</span> <span class="mi">32</span> <span class="n">by</span> <span class="mi">32</span> <span class="n">block</span> <span class="o">-</span> <span class="mi">1024</span> <span class="n">threads</span> <span class="o">-</span> <span class="nb">max</span> <span class="n">allowed</span>
+	<span class="n">blockSize</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="mi">32</span><span class="p">;</span>
+
+        <span class="n">numBlocks</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">m</span> <span class="o">+</span> <span class="n">blockSize</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">blockSize</span><span class="o">.</span><span class="n">x</span><span class="p">;</span>
+        <span class="n">numBlocks</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="n">blockSize</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">blockSize</span><span class="o">.</span><span class="n">y</span><span class="p">;</span>	
+	<span class="n">printf</span><span class="p">(</span><span class="s2">&quot;Numblks x </span><span class="si">%d</span><span class="s2"> Blksize x </span><span class="si">%d</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">numBlocks</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">blockSize</span><span class="o">.</span><span class="n">x</span><span class="p">);</span>
+        <span class="o">//</span> <span class="n">a</span> <span class="o">-</span> <span class="n">orthogonal</span> <span class="n">symmetric</span> <span class="n">matix</span>
+        <span class="n">initmatrix</span><span class="o">&lt;&lt;&lt;</span><span class="n">numBlocks</span><span class="p">,</span><span class="n">blockSize</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">a</span><span class="p">);</span>
+
+        <span class="n">numBlocks</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="n">blockSize</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">blockSize</span><span class="o">.</span><span class="n">x</span><span class="p">;</span>
+        <span class="n">numBlocks</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="n">blockSize</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">blockSize</span><span class="o">.</span><span class="n">y</span><span class="p">;</span>
+        <span class="o">//</span> <span class="n">b</span> <span class="o">-</span> <span class="n">orthogonal</span> <span class="n">symmetric</span> <span class="n">matix</span>
+        <span class="n">initmatrix</span><span class="o">&lt;&lt;&lt;</span><span class="n">numBlocks</span><span class="p">,</span><span class="n">blockSize</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">b</span><span class="p">);</span>
+
+        <span class="n">numBlocks</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">m</span> <span class="o">+</span> <span class="n">blockSize</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">blockSize</span><span class="o">.</span><span class="n">x</span><span class="p">;</span>
+        <span class="n">numBlocks</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="n">blockSize</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">blockSize</span><span class="o">.</span><span class="n">y</span><span class="p">;</span>
+	<span class="o">//</span> <span class="n">c</span> <span class="o">-</span> <span class="n">ones</span> <span class="n">along</span> <span class="n">diagonal</span><span class="p">;</span> <span class="n">zero</span> <span class="n">elsewhere</span>
+        <span class="n">initident</span><span class="o">&lt;&lt;&lt;</span><span class="n">numBlocks</span><span class="p">,</span><span class="n">blockSize</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">c</span><span class="p">);</span>
+        <span class="n">cudaDeviceSynchronize</span><span class="p">();</span> <span class="o">//</span> <span class="n">Need</span> <span class="n">matrices</span> <span class="n">to</span> <span class="n">be</span> <span class="n">defined</span> <span class="n">before</span> <span class="k">continue</span>
+	<span class="n">clock_gettime</span> <span class="p">(</span> <span class="n">CLOCK_REALTIME</span> <span class="p">,</span><span class="o">&amp;</span><span class="n">stop</span> <span class="p">);</span> <span class="o">//</span> <span class="n">timer</span> <span class="n">stop</span>
+ 	<span class="n">accum</span> <span class="o">=</span><span class="p">(</span> <span class="n">stop</span><span class="o">.</span><span class="n">tv_sec</span> <span class="o">-</span> <span class="n">start</span><span class="o">.</span><span class="n">tv_sec</span> <span class="p">)</span><span class="o">+</span> <span class="o">//</span> <span class="n">elapsed</span> <span class="n">time</span> <span class="n">create</span> <span class="n">A</span>
+	       <span class="p">(</span> <span class="n">stop</span><span class="o">.</span><span class="n">tv_nsec</span> <span class="o">-</span> <span class="n">start</span><span class="o">.</span><span class="n">tv_nsec</span> <span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">double</span><span class="p">)</span><span class="n">BILLION</span> <span class="p">;</span>	
+ 	<span class="n">printf</span> <span class="p">(</span><span class="s2">&quot; Initialise : </span><span class="si">%lf</span><span class="s2"> sec .</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">accum</span> <span class="p">);</span> <span class="o">//</span> <span class="nb">print</span> <span class="n">el</span><span class="o">.</span> <span class="n">time</span>
+	<span class="o">//</span> <span class="nb">print</span> <span class="n">a</span> <span class="n">row</span> <span class="n">by</span> <span class="n">row</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s2">&quot;a:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+	
+	<span class="n">cublasCreate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">handle</span><span class="p">);</span> <span class="o">//</span> <span class="n">initialize</span> <span class="n">CUBLAS</span> <span class="n">context</span>
+	<span class="nb">float</span> <span class="n">al</span> <span class="o">=</span> <span class="mf">1.0</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="n">al</span> <span class="o">=</span><span class="mi">1</span>
+	<span class="nb">float</span> <span class="n">bet</span> <span class="o">=</span> <span class="mf">1.0</span><span class="n">f</span><span class="p">;</span> <span class="o">//</span> <span class="n">bet</span> <span class="o">=</span><span class="mi">1</span>
+	<span class="o">//</span> <span class="n">matrix</span> <span class="o">-</span> <span class="n">matrix</span> <span class="n">multiplication</span> <span class="p">:</span> <span class="n">c</span> <span class="o">=</span> <span class="n">al</span><span class="o">*</span><span class="n">a</span><span class="o">*</span><span class="n">b</span> <span class="o">+</span> <span class="n">bet</span> <span class="o">*</span><span class="n">c</span>
+	<span class="o">//</span> <span class="n">a</span> <span class="o">-</span><span class="n">mxk</span> <span class="n">matrix</span> <span class="p">,</span> <span class="n">b</span> <span class="o">-</span><span class="n">kxn</span> <span class="n">matrix</span> <span class="p">,</span> <span class="n">c</span> <span class="o">-</span><span class="n">mxn</span> <span class="n">matrix</span> <span class="p">;</span>
+	<span class="o">//</span> <span class="n">al</span> <span class="p">,</span><span class="n">bet</span> <span class="o">-</span><span class="n">scalars</span>
+	<span class="n">clock_gettime</span> <span class="p">(</span> <span class="n">CLOCK_REALTIME</span> <span class="p">,</span><span class="o">&amp;</span><span class="n">start</span> <span class="p">);</span> <span class="o">//</span> <span class="n">timer</span> <span class="n">start</span>
+	<span class="n">cublasSgemm</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">CUBLAS_OP_N</span><span class="p">,</span> <span class="n">CUBLAS_OP_N</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">al</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span>
+		<span class="o">&amp;</span><span class="n">bet</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">m</span><span class="p">);</span>
+	<span class="n">cudaDeviceSynchronize</span><span class="p">();</span>
+	<span class="n">clock_gettime</span> <span class="p">(</span> <span class="n">CLOCK_REALTIME</span> <span class="p">,</span><span class="o">&amp;</span><span class="n">stop</span> <span class="p">);</span>  <span class="o">//</span> <span class="n">timer</span> <span class="n">stop</span>
+ 	<span class="n">accum</span> <span class="o">=</span><span class="p">(</span> <span class="n">stop</span><span class="o">.</span><span class="n">tv_sec</span> <span class="o">-</span> <span class="n">start</span><span class="o">.</span><span class="n">tv_sec</span> <span class="p">)</span><span class="o">+</span>    <span class="o">//</span> <span class="n">elapsed</span> <span class="n">time</span> <span class="k">for</span> <span class="n">MN</span><span class="p">(</span><span class="mi">2</span><span class="n">K</span><span class="o">+</span><span class="mi">3</span><span class="p">)</span> <span class="n">flops</span>
+	       <span class="p">(</span> <span class="n">stop</span><span class="o">.</span><span class="n">tv_nsec</span> <span class="o">-</span> <span class="n">start</span><span class="o">.</span><span class="n">tv_nsec</span> <span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">double</span><span class="p">)</span><span class="n">BILLION</span> <span class="p">;</span>
+        <span class="n">printf</span> <span class="p">(</span><span class="s2">&quot; sgemm : </span><span class="si">%lf</span><span class="s2"> sec .</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">accum</span> <span class="p">);</span> <span class="o">//</span> <span class="nb">print</span> <span class="n">el</span><span class="o">.</span> <span class="n">time</span>
+        <span class="n">printf</span> <span class="p">(</span><span class="s2">&quot; Gflops : </span><span class="si">%lf</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,(</span><span class="n">double</span><span class="p">)</span><span class="n">m</span><span class="o">*</span><span class="p">(</span><span class="n">double</span><span class="p">)</span><span class="n">n</span><span class="o">*</span><span class="p">(</span><span class="mf">2.e0</span><span class="o">*</span><span class="n">k</span><span class="o">+</span><span class="mf">3.0</span><span class="p">)</span><span class="o">*</span><span class="mf">1.e-9</span><span class="o">/</span><span class="n">accum</span><span class="p">);</span> <span class="o">//</span> <span class="nb">print</span> <span class="n">Gflops</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s2">&quot;c after Sgemm :</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+	<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">printlim</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">j</span> <span class="o">&lt;</span> <span class="n">printlim</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">printf</span><span class="p">(</span><span class="s2">&quot; </span><span class="si">%7.4f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">c</span><span class="p">[</span><span class="n">IDX2C</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">m</span><span class="p">)]);</span> <span class="o">//</span> <span class="nb">print</span> <span class="n">c</span> <span class="n">after</span> <span class="n">Sgemm</span>
+		<span class="p">}</span>
+		<span class="n">printf</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="n">cudaFree</span><span class="p">(</span><span class="n">a</span><span class="p">);</span> <span class="o">//</span> <span class="n">free</span> <span class="n">memory</span>
+	<span class="n">cudaFree</span><span class="p">(</span><span class="n">b</span><span class="p">);</span> <span class="o">//</span> <span class="n">free</span> <span class="n">memory</span>
+	<span class="n">cudaFree</span><span class="p">(</span><span class="n">c</span><span class="p">);</span> <span class="o">//</span> <span class="n">free</span> <span class="n">memory</span>
+	<span class="n">cublasDestroy</span><span class="p">(</span><span class="n">handle</span><span class="p">);</span> <span class="o">//</span> <span class="n">destroy</span> <span class="n">CUBLAS</span> <span class="n">context</span>
+	<span class="k">return</span> <span class="n">EXIT_SUCCESS</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The performance on different systems is interesting and it also demonstrates the ease of using nvprof (only an abbreviated output is shown).</p>
+<p>On a system with a Quadro P4000 GPU and Skylake 6138 processor (2.0 GHz) -  Driver Version: 460.32.03    CUDA Version: 11.2</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Numblks</span> <span class="n">x</span> <span class="mi">625</span> <span class="n">Blksize</span> <span class="n">x</span> <span class="mi">32</span>
+<span class="n">Initialise</span> <span class="p">:</span> <span class="mf">0.438705</span> <span class="n">sec</span> <span class="o">.</span>
+<span class="n">sgemm</span> <span class="p">:</span> <span class="mf">3.547108</span> <span class="n">sec</span> <span class="o">.</span>
+<span class="n">Gflops</span> <span class="p">:</span> <span class="mf">4511.054646</span>
+
+
+
+           <span class="n">Type</span>  <span class="n">Time</span><span class="p">(</span><span class="o">%</span><span class="p">)</span>      <span class="n">Time</span>     <span class="n">Calls</span>       <span class="n">Avg</span>       <span class="n">Min</span>       <span class="n">Max</span>  <span class="n">Name</span>
+<span class="n">GPU</span> <span class="n">activities</span><span class="p">:</span>   <span class="mf">88.99</span><span class="o">%</span>  <span class="mf">3.54694</span><span class="n">s</span>         <span class="mi">1</span>  <span class="mf">3.54694</span><span class="n">s</span>  <span class="mf">3.54694</span><span class="n">s</span>  <span class="mf">3.54694</span><span class="n">s</span>  <span class="n">maxwell_sgemm_128x128_nn</span>
+                   <span class="mf">7.99</span><span class="o">%</span>  <span class="mf">318.64</span><span class="n">ms</span>         <span class="mi">2</span>  <span class="mf">159.32</span><span class="n">ms</span>  <span class="mf">125.55</span><span class="n">ms</span>  <span class="mf">193.09</span><span class="n">ms</span>  <span class="n">initmatrix</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="o">*</span><span class="p">)</span>
+                   <span class="mf">3.01</span><span class="o">%</span>  <span class="mf">119.98</span><span class="n">ms</span>         <span class="mi">1</span>  <span class="mf">119.98</span><span class="n">ms</span>  <span class="mf">119.98</span><span class="n">ms</span>  <span class="mf">119.98</span><span class="n">ms</span>  <span class="n">initident</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="o">*</span><span class="p">)</span>
+                   <span class="mf">0.00</span><span class="o">%</span>     <span class="mi">960</span><span class="n">ns</span>         <span class="mi">1</span>     <span class="mi">960</span><span class="n">ns</span>     <span class="mi">960</span><span class="n">ns</span>     <span class="mi">960</span><span class="n">ns</span>  <span class="p">[</span><span class="n">CUDA</span> <span class="n">memcpy</span> <span class="n">HtoD</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>On a system with a v100 and Cascade Lake 5218 (2.30GHz) -  Driver Version: 460.32.03    CUDA Version: 11.2</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Numblks</span> <span class="n">x</span> <span class="mi">625</span> <span class="n">Blksize</span> <span class="n">x</span> <span class="mi">32</span>
+<span class="n">Initialise</span> <span class="p">:</span> <span class="mf">0.254990</span> <span class="n">sec</span> <span class="o">.</span>
+<span class="n">sgemm</span> <span class="p">:</span> <span class="mf">1.299593</span> <span class="n">sec</span> <span class="o">.</span>
+<span class="n">Gflops</span> <span class="p">:</span> <span class="mf">12312.468032</span>
+
+           <span class="n">Type</span>  <span class="n">Time</span><span class="p">(</span><span class="o">%</span><span class="p">)</span>      <span class="n">Time</span>     <span class="n">Calls</span>       <span class="n">Avg</span>       <span class="n">Min</span>       <span class="n">Max</span>  <span class="n">Name</span>
+<span class="n">GPU</span> <span class="n">activities</span><span class="p">:</span>   <span class="mf">82.77</span><span class="o">%</span>  <span class="mf">1.22389</span><span class="n">s</span>         <span class="mi">1</span>  <span class="mf">1.22389</span><span class="n">s</span>  <span class="mf">1.22389</span><span class="n">s</span>  <span class="mf">1.22389</span><span class="n">s</span>  <span class="n">volta_sgemm_128x64_nn</span>
+                  <span class="mf">11.72</span><span class="o">%</span>  <span class="mf">173.30</span><span class="n">ms</span>         <span class="mi">2</span>  <span class="mf">86.650</span><span class="n">ms</span>  <span class="mf">75.697</span><span class="n">ms</span>  <span class="mf">97.603</span><span class="n">ms</span>  <span class="n">initmatrix</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="o">*</span><span class="p">)</span>
+                   <span class="mf">5.51</span><span class="o">%</span>  <span class="mf">81.526</span><span class="n">ms</span>         <span class="mi">1</span>  <span class="mf">81.526</span><span class="n">ms</span>  <span class="mf">81.526</span><span class="n">ms</span>  <span class="mf">81.526</span><span class="n">ms</span>  <span class="n">initident</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="o">*</span><span class="p">)</span>
+                   <span class="mf">0.00</span><span class="o">%</span>  <span class="mf">1.8240</span><span class="n">us</span>         <span class="mi">1</span>  <span class="mf">1.8240</span><span class="n">us</span>  <span class="mf">1.8240</span><span class="n">us</span>  <span class="mf">1.8240</span><span class="n">us</span>  <span class="p">[</span><span class="n">CUDA</span> <span class="n">memcpy</span> <span class="n">HtoD</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>On login2 of Bede - AC922 - v100 with Power 9 (3.8GHz) - Driver Version: 440.95.01    CUDA Version: 10.2</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Numblks</span> <span class="n">x</span> <span class="mi">625</span> <span class="n">Blksize</span> <span class="n">x</span> <span class="mi">32</span>
+<span class="n">Initialise</span> <span class="p">:</span> <span class="mf">0.420643</span> <span class="n">sec</span> <span class="o">.</span>
+<span class="n">sgemm</span> <span class="p">:</span> <span class="mf">1.154472</span> <span class="n">sec</span> <span class="o">.</span>
+<span class="n">Gflops</span> <span class="p">:</span> <span class="mf">13860.183378</span>
+
+           <span class="n">Type</span>  <span class="n">Time</span><span class="p">(</span><span class="o">%</span><span class="p">)</span>      <span class="n">Time</span>     <span class="n">Calls</span>       <span class="n">Avg</span>       <span class="n">Min</span>       <span class="n">Max</span>  <span class="n">Name</span>
+<span class="n">GPU</span> <span class="n">activities</span><span class="p">:</span>   <span class="mf">73.29</span><span class="o">%</span>  <span class="mf">1.15420</span><span class="n">s</span>         <span class="mi">1</span>  <span class="mf">1.15420</span><span class="n">s</span>  <span class="mf">1.15420</span><span class="n">s</span>  <span class="mf">1.15420</span><span class="n">s</span>  <span class="n">volta_sgemm_128x32_sliced1x4_nn</span>
+                  <span class="mf">18.77</span><span class="o">%</span>  <span class="mf">295.52</span><span class="n">ms</span>         <span class="mi">2</span>  <span class="mf">147.76</span><span class="n">ms</span>  <span class="mf">147.09</span><span class="n">ms</span>  <span class="mf">148.43</span><span class="n">ms</span>  <span class="n">initmatrix</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="o">*</span><span class="p">)</span>
+                   <span class="mf">7.94</span><span class="o">%</span>  <span class="mf">125.04</span><span class="n">ms</span>         <span class="mi">1</span>  <span class="mf">125.04</span><span class="n">ms</span>  <span class="mf">125.04</span><span class="n">ms</span>  <span class="mf">125.04</span><span class="n">ms</span>  <span class="n">initident</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="o">*</span><span class="p">)</span>
+                   <span class="mf">0.00</span><span class="o">%</span>  <span class="mf">1.6320</span><span class="n">us</span>         <span class="mi">1</span>  <span class="mf">1.6320</span><span class="n">us</span>  <span class="mf">1.6320</span><span class="n">us</span>  <span class="mf">1.6320</span><span class="n">us</span>  <span class="p">[</span><span class="n">CUDA</span> <span class="n">memcpy</span> <span class="n">HtoD</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The slower initialise times on the Bede node are interesting. The reasons for this are not clear, but steps can be taken to improve the performance on all of the systems.</p>
+<p>By default, Unified Memory allocates pages in the CPU memory and migrates them over to the GPU on demand. It is possible, using the <code class="docutils literal"><span class="pre">cudaMemPrefetchAsync</span></code> command to
+preallocate memory on a particular GPU / device.</p>
+<p>The relevant modified code to our earlier sgemm code is:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="nb">int</span> <span class="n">device</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span> <span class="o">//</span> <span class="n">For</span> <span class="n">GPU</span> <span class="n">number</span>
+<span class="o">//</span> <span class="n">unified</span> <span class="n">memory</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span>
+<span class="n">cudaMallocManaged</span><span class="p">(</span><span class="o">&amp;</span><span class="n">a</span><span class="p">,</span> <span class="n">m</span><span class="o">*</span><span class="n">k</span> <span class="o">*</span> <span class="n">sizeof</span><span class="p">(</span><span class="nb">float</span><span class="p">));</span>
+<span class="n">cudaMallocManaged</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="p">,</span> <span class="n">k</span><span class="o">*</span><span class="n">n</span> <span class="o">*</span> <span class="n">sizeof</span><span class="p">(</span><span class="nb">float</span><span class="p">));</span>
+<span class="n">cudaMallocManaged</span><span class="p">(</span><span class="o">&amp;</span><span class="n">c</span><span class="p">,</span> <span class="n">m</span><span class="o">*</span><span class="n">n</span> <span class="o">*</span> <span class="n">sizeof</span><span class="p">(</span><span class="nb">float</span><span class="p">));</span>
+<span class="n">cudaGetDevice</span><span class="p">(</span><span class="o">&amp;</span><span class="n">device</span><span class="p">);</span>
+<span class="n">cudaMemPrefetchAsync</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">m</span><span class="o">*</span><span class="n">k</span><span class="o">*</span><span class="n">sizeof</span><span class="p">(</span><span class="nb">float</span><span class="p">),</span> <span class="n">device</span><span class="p">,</span> <span class="n">NULL</span><span class="p">);</span>
+<span class="n">cudaMemPrefetchAsync</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">k</span><span class="o">*</span><span class="n">n</span><span class="o">*</span><span class="n">sizeof</span><span class="p">(</span><span class="nb">float</span><span class="p">),</span> <span class="n">device</span><span class="p">,</span> <span class="n">NULL</span><span class="p">);</span>
+<span class="n">cudaMemPrefetchAsync</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">m</span><span class="o">*</span><span class="n">n</span><span class="o">*</span><span class="n">sizeof</span><span class="p">(</span><span class="nb">float</span><span class="p">),</span> <span class="n">device</span><span class="p">,</span> <span class="n">NULL</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Running the modified version of the code on our test platforms shows the change:</p>
+<p>On a system with a Quadro P4000 GPU and Skylake 6138 processor (2.0 GHz) -  Driver Version: 460.32.03    CUDA Version: 11.2</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Numblks</span> <span class="n">x</span> <span class="mi">625</span> <span class="n">Blksize</span> <span class="n">x</span> <span class="mi">32</span>
+<span class="n">Initialise</span> <span class="p">:</span> <span class="mf">0.049530</span> <span class="n">sec</span> <span class="o">.</span>
+<span class="n">sgemm</span> <span class="p">:</span> <span class="mf">3.599292</span> <span class="n">sec</span> <span class="o">.</span>
+<span class="n">Gflops</span> <span class="p">:</span> <span class="mf">4445.652504</span>
+
+           <span class="n">Type</span>  <span class="n">Time</span><span class="p">(</span><span class="o">%</span><span class="p">)</span>      <span class="n">Time</span>     <span class="n">Calls</span>       <span class="n">Avg</span>       <span class="n">Min</span>       <span class="n">Max</span>  <span class="n">Name</span>
+<span class="n">GPU</span> <span class="n">activities</span><span class="p">:</span>   <span class="mf">98.65</span><span class="o">%</span>  <span class="mf">3.59913</span><span class="n">s</span>         <span class="mi">1</span>  <span class="mf">3.59913</span><span class="n">s</span>  <span class="mf">3.59913</span><span class="n">s</span>  <span class="mf">3.59913</span><span class="n">s</span>  <span class="n">maxwell_sgemm_128x128_nn</span>
+                   <span class="mf">1.00</span><span class="o">%</span>  <span class="mf">36.340</span><span class="n">ms</span>         <span class="mi">2</span>  <span class="mf">18.170</span><span class="n">ms</span>  <span class="mf">18.168</span><span class="n">ms</span>  <span class="mf">18.172</span><span class="n">ms</span>  <span class="n">initmatrix</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="o">*</span><span class="p">)</span>
+                   <span class="mf">0.36</span><span class="o">%</span>  <span class="mf">13.072</span><span class="n">ms</span>         <span class="mi">1</span>  <span class="mf">13.072</span><span class="n">ms</span>  <span class="mf">13.072</span><span class="n">ms</span>  <span class="mf">13.072</span><span class="n">ms</span>  <span class="n">initident</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="o">*</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>On a system with a v100 and Cascade Lake 5218 (2.30GHz) -  Driver Version: 460.32.03    CUDA Version: 11.2</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Numblks</span> <span class="n">x</span> <span class="mi">625</span> <span class="n">Blksize</span> <span class="n">x</span> <span class="mi">32</span>
+<span class="n">Initialise</span> <span class="p">:</span> <span class="mf">0.006248</span> <span class="n">sec</span> <span class="o">.</span>
+<span class="n">sgemm</span> <span class="p">:</span> <span class="mf">1.582949</span> <span class="n">sec</span> <span class="o">.</span>
+<span class="n">Gflops</span> <span class="p">:</span> <span class="mf">10108.474267</span>
+
+           <span class="n">Type</span>  <span class="n">Time</span><span class="p">(</span><span class="o">%</span><span class="p">)</span>      <span class="n">Time</span>     <span class="n">Calls</span>       <span class="n">Avg</span>       <span class="n">Min</span>       <span class="n">Max</span>  <span class="n">Name</span>
+<span class="n">GPU</span> <span class="n">activities</span><span class="p">:</span>   <span class="mf">99.51</span><span class="o">%</span>  <span class="mf">1.23181</span><span class="n">s</span>         <span class="mi">1</span>  <span class="mf">1.23181</span><span class="n">s</span>  <span class="mf">1.23181</span><span class="n">s</span>  <span class="mf">1.23181</span><span class="n">s</span>  <span class="n">volta_sgemm_128x64_nn</span>
+                   <span class="mf">0.35</span><span class="o">%</span>  <span class="mf">4.3074</span><span class="n">ms</span>         <span class="mi">2</span>  <span class="mf">2.1537</span><span class="n">ms</span>  <span class="mf">2.1522</span><span class="n">ms</span>  <span class="mf">2.1552</span><span class="n">ms</span>  <span class="n">initmatrix</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="o">*</span><span class="p">)</span>
+                   <span class="mf">0.14</span><span class="o">%</span>  <span class="mf">1.7876</span><span class="n">ms</span>         <span class="mi">1</span>  <span class="mf">1.7876</span><span class="n">ms</span>  <span class="mf">1.7876</span><span class="n">ms</span>  <span class="mf">1.7876</span><span class="n">ms</span>  <span class="n">initident</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="o">*</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>On login1 of Bede - AC922 - v100 with Power 9 (3.8GHz) - Driver Version: 440.95.01    CUDA Version: 10.2</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Numblks</span> <span class="n">x</span> <span class="mi">625</span> <span class="n">Blksize</span> <span class="n">x</span> <span class="mi">32</span>
+<span class="n">Initialise</span> <span class="p">:</span> <span class="mf">0.073072</span> <span class="n">sec</span> <span class="o">.</span>
+<span class="n">sgemm</span> <span class="p">:</span> <span class="mf">1.130069</span> <span class="n">sec</span> <span class="o">.</span>
+<span class="n">Gflops</span> <span class="p">:</span> <span class="mf">14159.493073</span>
+
+           <span class="n">Type</span>  <span class="n">Time</span><span class="p">(</span><span class="o">%</span><span class="p">)</span>      <span class="n">Time</span>     <span class="n">Calls</span>       <span class="n">Avg</span>       <span class="n">Min</span>       <span class="n">Max</span>  <span class="n">Name</span>
+<span class="n">GPU</span> <span class="n">activities</span><span class="p">:</span>   <span class="mf">99.49</span><span class="o">%</span>  <span class="mf">1.12983</span><span class="n">s</span>         <span class="mi">1</span>  <span class="mf">1.12983</span><span class="n">s</span>  <span class="mf">1.12983</span><span class="n">s</span>  <span class="mf">1.12983</span><span class="n">s</span>  <span class="n">volta_sgemm_128x32_sliced1x4_nn</span>
+                   <span class="mf">0.36</span><span class="o">%</span>  <span class="mf">4.0385</span><span class="n">ms</span>         <span class="mi">2</span>  <span class="mf">2.0193</span><span class="n">ms</span>  <span class="mf">2.0175</span><span class="n">ms</span>  <span class="mf">2.0210</span><span class="n">ms</span>  <span class="n">initmatrix</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="o">*</span><span class="p">)</span>
+                   <span class="mf">0.16</span><span class="o">%</span>  <span class="mf">1.7935</span><span class="n">ms</span>         <span class="mi">1</span>  <span class="mf">1.7935</span><span class="n">ms</span>  <span class="mf">1.7935</span><span class="n">ms</span>  <span class="mf">1.7935</span><span class="n">ms</span>  <span class="n">initident</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="o">*</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The initialisation times are dramatically reduced, indeed they are sufficiently low that we are running into timing accuracy of the <code class="docutils literal"><span class="pre">clock_gettime</span></code> function. It is best
+to look at the times recorded directly by nvprof, where (as expected), there is little difference between the results on the two v100 systems.</p>
+<p>Since unified memory &#8220;works&#8221; from the GPU side of things and we are interested in the performance difference that Bede&#8217;s fast CPU-GPU connections might provide, the above
+experiments were repeated with the matrices a, b, and c created on the CPU and then migrated across on demand to the GPU.</p>
+<p>The results are interesting and do appear to show that there are performance advantages on Bede.</p>
+<p>On a system with a Quadro P4000 GPU and Skylake 6138 processor (2.0 GHz) -  Driver Version: 460.32.03    CUDA Version: 11.2</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Initialise</span> <span class="p">:</span> <span class="mf">25.894818</span> <span class="n">sec</span> <span class="o">.</span>
+
+<span class="n">sgemm</span> <span class="p">:</span> <span class="mf">4.593165</span> <span class="n">sec</span> <span class="o">.</span>
+<span class="n">Gflops</span> <span class="p">:</span> <span class="mf">3483.698256</span>
+
+           <span class="n">Type</span>  <span class="n">Time</span><span class="p">(</span><span class="o">%</span><span class="p">)</span>      <span class="n">Time</span>     <span class="n">Calls</span>       <span class="n">Avg</span>       <span class="n">Min</span>       <span class="n">Max</span>  <span class="n">Name</span>
+<span class="n">GPU</span> <span class="n">activities</span><span class="p">:</span>  <span class="mf">100.00</span><span class="o">%</span>  <span class="mf">4.59301</span><span class="n">s</span>         <span class="mi">1</span>  <span class="mf">4.59301</span><span class="n">s</span>  <span class="mf">4.59301</span><span class="n">s</span>  <span class="mf">4.59301</span><span class="n">s</span>  <span class="n">maxwell_sgemm_128x128_nn</span>
+<span class="o">...</span>
+<span class="n">Device</span> <span class="s2">&quot;Quadro P4000 (0)&quot;</span>
+  <span class="n">Count</span>  <span class="n">Avg</span> <span class="n">Size</span>  <span class="n">Min</span> <span class="n">Size</span>  <span class="n">Max</span> <span class="n">Size</span>  <span class="n">Total</span> <span class="n">Size</span>  <span class="n">Total</span> <span class="n">Time</span>  <span class="n">Name</span>
+  <span class="mi">81282</span>  <span class="mf">57.669</span><span class="n">KB</span>  <span class="mf">4.0000</span><span class="n">KB</span>  <span class="mf">0.9961</span><span class="n">MB</span>  <span class="mf">4.470348</span><span class="n">GB</span>  <span class="mf">485.5766</span><span class="n">ms</span>  <span class="n">Host</span> <span class="n">To</span> <span class="n">Device</span>
+     <span class="mi">14</span>  <span class="mf">73.143</span><span class="n">KB</span>  <span class="mf">4.0000</span><span class="n">KB</span>  <span class="mf">476.00</span><span class="n">KB</span>  <span class="mf">1.000000</span><span class="n">MB</span>  <span class="mf">91.07200</span><span class="n">us</span>  <span class="n">Device</span> <span class="n">To</span> <span class="n">Host</span>
+   <span class="mi">6262</span>         <span class="o">-</span>         <span class="o">-</span>         <span class="o">-</span>           <span class="o">-</span>   <span class="mf">1.632346</span><span class="n">s</span>  <span class="n">Gpu</span> <span class="n">page</span> <span class="n">fault</span> <span class="n">groups</span>
+<span class="n">Total</span> <span class="n">CPU</span> <span class="n">Page</span> <span class="n">faults</span><span class="p">:</span> <span class="mi">13739</span>
+</pre></div>
+</div>
+<p>On a system with a v100 and Cascade Lake 5218 (2.30GHz) -  Driver Version: 460.32.03    CUDA Version: 11.2</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Initialise</span> <span class="p">:</span> <span class="mf">23.655406</span> <span class="n">sec</span> <span class="o">.</span>
+<span class="n">sgemm</span> <span class="p">:</span> <span class="mf">2.265335</span> <span class="n">sec</span> <span class="o">.</span>
+<span class="n">Gflops</span> <span class="p">:</span> <span class="mf">7063.503525</span>
+
+           <span class="n">Type</span>  <span class="n">Time</span><span class="p">(</span><span class="o">%</span><span class="p">)</span>      <span class="n">Time</span>     <span class="n">Calls</span>       <span class="n">Avg</span>       <span class="n">Min</span>       <span class="n">Max</span>  <span class="n">Name</span>
+<span class="n">GPU</span> <span class="n">activities</span><span class="p">:</span>  <span class="mf">100.00</span><span class="o">%</span>  <span class="mf">2.26486</span><span class="n">s</span>         <span class="mi">1</span>  <span class="mf">2.26486</span><span class="n">s</span>  <span class="mf">2.26486</span><span class="n">s</span>  <span class="mf">2.26486</span><span class="n">s</span>  <span class="n">volta_sgemm_128x64_nn</span>
+<span class="o">...</span>
+<span class="n">Device</span> <span class="s2">&quot;Tesla V100-PCIE-16GB (0)&quot;</span>
+  <span class="n">Count</span>  <span class="n">Avg</span> <span class="n">Size</span>  <span class="n">Min</span> <span class="n">Size</span>  <span class="n">Max</span> <span class="n">Size</span>  <span class="n">Total</span> <span class="n">Size</span>  <span class="n">Total</span> <span class="n">Time</span>  <span class="n">Name</span>
+  <span class="mi">74761</span>  <span class="mf">56.784</span><span class="n">KB</span>  <span class="mf">4.0000</span><span class="n">KB</span>  <span class="mf">0.9961</span><span class="n">MB</span>  <span class="mf">4.048588</span><span class="n">GB</span>  <span class="mf">565.0188</span><span class="n">ms</span>  <span class="n">Host</span> <span class="n">To</span> <span class="n">Device</span>
+     <span class="mi">12</span>  <span class="mf">80.000</span><span class="n">KB</span>  <span class="mf">4.0000</span><span class="n">KB</span>  <span class="mf">476.00</span><span class="n">KB</span>  <span class="mf">960.0000</span><span class="n">KB</span>  <span class="mf">92.25500</span><span class="n">us</span>  <span class="n">Device</span> <span class="n">To</span> <span class="n">Host</span>
+   <span class="mi">3272</span>         <span class="o">-</span>         <span class="o">-</span>         <span class="o">-</span>           <span class="o">-</span>   <span class="mf">1.172802</span><span class="n">s</span>  <span class="n">Gpu</span> <span class="n">page</span> <span class="n">fault</span> <span class="n">groups</span>
+<span class="n">Total</span> <span class="n">CPU</span> <span class="n">Page</span> <span class="n">faults</span><span class="p">:</span> <span class="mi">13738</span>
+</pre></div>
+</div>
+<p>On login1 of Bede - AC922 - v100 with Power 9 (3.8GHz) - Driver Version: 440.95.01    CUDA Version: 10.2</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Initialise</span> <span class="p">:</span> <span class="mf">18.209140</span> <span class="n">sec</span> <span class="o">.</span>
+<span class="n">sgemm</span> <span class="p">:</span> <span class="mf">1.926488</span> <span class="n">sec</span> <span class="o">.</span>
+<span class="n">Gflops</span> <span class="p">:</span> <span class="mf">8305.890756</span>
+
+           <span class="n">Type</span>  <span class="n">Time</span><span class="p">(</span><span class="o">%</span><span class="p">)</span>      <span class="n">Time</span>     <span class="n">Calls</span>       <span class="n">Avg</span>       <span class="n">Min</span>       <span class="n">Max</span>  <span class="n">Name</span>
+<span class="n">GPU</span> <span class="n">activities</span><span class="p">:</span>  <span class="mf">100.00</span><span class="o">%</span>  <span class="mf">1.92625</span><span class="n">s</span>         <span class="mi">1</span>  <span class="mf">1.92625</span><span class="n">s</span>  <span class="mf">1.92625</span><span class="n">s</span>  <span class="mf">1.92625</span><span class="n">s</span>  <span class="n">volta_sgemm_128x32_sliced1x4_nn</span>
+<span class="o">...</span>
+<span class="n">Device</span> <span class="s2">&quot;Tesla V100-SXM2-32GB (0)&quot;</span>
+  <span class="n">Count</span>  <span class="n">Avg</span> <span class="n">Size</span>  <span class="n">Min</span> <span class="n">Size</span>  <span class="n">Max</span> <span class="n">Size</span>  <span class="n">Total</span> <span class="n">Size</span>  <span class="n">Total</span> <span class="n">Time</span>  <span class="n">Name</span>
+  <span class="mi">39141</span>  <span class="mf">119.52</span><span class="n">KB</span>  <span class="mf">64.000</span><span class="n">KB</span>  <span class="mf">960.00</span><span class="n">KB</span>  <span class="mf">4.461243</span><span class="n">GB</span>  <span class="mf">220.4134</span><span class="n">ms</span>  <span class="n">Host</span> <span class="n">To</span> <span class="n">Device</span>
+      <span class="mi">7</span>  <span class="mf">137.14</span><span class="n">KB</span>  <span class="mf">64.000</span><span class="n">KB</span>  <span class="mf">448.00</span><span class="n">KB</span>  <span class="mf">960.0000</span><span class="n">KB</span>  <span class="mf">39.52000</span><span class="n">us</span>  <span class="n">Device</span> <span class="n">To</span> <span class="n">Host</span>
+   <span class="mi">2085</span>         <span class="o">-</span>         <span class="o">-</span>         <span class="o">-</span>           <span class="o">-</span>  <span class="mf">877.0859</span><span class="n">ms</span>  <span class="n">Gpu</span> <span class="n">page</span> <span class="n">fault</span> <span class="n">groups</span>
+<span class="n">Total</span> <span class="n">CPU</span> <span class="n">Page</span> <span class="n">faults</span><span class="p">:</span> <span class="mi">13739</span>
+</pre></div>
+</div>
+<p>The sgemm performance is impacted by the time required to fetch the data, but the interesting numbers are the times spent in paging from Host to Device:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Device</span> <span class="s2">&quot;Quadro P4000 (0)&quot;</span>
+  <span class="n">Count</span>  <span class="n">Avg</span> <span class="n">Size</span>  <span class="n">Min</span> <span class="n">Size</span>  <span class="n">Max</span> <span class="n">Size</span>  <span class="n">Total</span> <span class="n">Size</span>  <span class="n">Total</span> <span class="n">Time</span>  <span class="n">Name</span>
+  <span class="mi">81282</span>  <span class="mf">57.669</span><span class="n">KB</span>  <span class="mf">4.0000</span><span class="n">KB</span>  <span class="mf">0.9961</span><span class="n">MB</span>  <span class="mf">4.470348</span><span class="n">GB</span>  <span class="mf">485.5766</span><span class="n">ms</span>  <span class="n">Host</span> <span class="n">To</span> <span class="n">Device</span>
+
+<span class="n">Device</span> <span class="s2">&quot;Tesla V100-PCIE-16GB (0)&quot;</span>
+  <span class="n">Count</span>  <span class="n">Avg</span> <span class="n">Size</span>  <span class="n">Min</span> <span class="n">Size</span>  <span class="n">Max</span> <span class="n">Size</span>  <span class="n">Total</span> <span class="n">Size</span>  <span class="n">Total</span> <span class="n">Time</span>  <span class="n">Name</span>
+  <span class="mi">74761</span>  <span class="mf">56.784</span><span class="n">KB</span>  <span class="mf">4.0000</span><span class="n">KB</span>  <span class="mf">0.9961</span><span class="n">MB</span>  <span class="mf">4.048588</span><span class="n">GB</span>  <span class="mf">565.0188</span><span class="n">ms</span>  <span class="n">Host</span> <span class="n">To</span> <span class="n">Device</span>
+
+<span class="n">Device</span> <span class="s2">&quot;Tesla V100-SXM2-32GB (0)&quot;</span>
+  <span class="n">Count</span>  <span class="n">Avg</span> <span class="n">Size</span>  <span class="n">Min</span> <span class="n">Size</span>  <span class="n">Max</span> <span class="n">Size</span>  <span class="n">Total</span> <span class="n">Size</span>  <span class="n">Total</span> <span class="n">Time</span>  <span class="n">Name</span>
+  <span class="mi">39141</span>  <span class="mf">119.52</span><span class="n">KB</span>  <span class="mf">64.000</span><span class="n">KB</span>  <span class="mf">960.00</span><span class="n">KB</span>  <span class="mf">4.461243</span><span class="n">GB</span>  <span class="mf">220.4134</span><span class="n">ms</span>  <span class="n">Host</span> <span class="n">To</span> <span class="n">Device</span>
+</pre></div>
+</div>
+<p>We can see that the time taken for moving the matrix data from the CPU to the GPU is more than halved on the Bede node. This does suggest there is some validity in the
+assumption that the faster sub-systems are exploited seamlessly.</p>
+</div>
+<div class="section" id="future-work">
+<h2>Future Work<a class="headerlink" href="#future-work" title="Permalink to this headline">¶</a></h2>
+<p>More carefuly designed experiments with Unified Memory are required.
+Unified Memory exploits automatically the faster coupling between the CPU and GPU
+on the AC922 than is found on GPU systems with x86_64 processors. Furthermore, Unified Memory can be oversubscribed and Unified Memory can be exploited both between the
+CPU and GPU and in multi-GPU
+programming within a node. Unified Memory can be exploited easily in Tensorflow. The PyTorch support appears to not be as advanced.</p>
+<p>Some interesting results on using Unified Memory with the RAPIDS software layer for data analytics and PyTorch for deep learning can be found in the 30 minute video
+<a class="reference external" href="https://developer.nvidia.com/gtc/2019/video/s9726/video">https://developer.nvidia.com/gtc/2019/video/s9726/video</a> (registration and login is required).</p>
+<p>Many important questions remain, such as the extent to which the IBM Large Memory Support API makes it easier to exploit the CPU memory on the GPU, but as a first step,
+Unified Memory appears to offer users a quick way to exploit Bede&#8217;s best features.</p>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+  <div data-ea-publisher>
+  </div>
+  
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../../_sources/software/wanderings/wanderings-in-CUDALand.rst.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2020, N8 CIR.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.<br/>
+    </p>
+  </div>
+</footer>
+
+  </body>
+</html>

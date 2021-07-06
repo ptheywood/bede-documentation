@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Hardware &#8212; Bede Documentation  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Usage" href="../usage/index.html" />
+    <link rel="prev" title="Bede Documentation" href="../index.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+  </head>
+  <body role="document">
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html"><span><img src="../_static/logo-cmyk.png"></span>
+           </a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="#">Hardware</a></li>
+                <li><a href="../software/index.html">Software</a></li>
+                <li><a href="../usage/index.html">Usage</a></li>
+                <li><a href="../profiling/index.html">Profiling</a></li>
+                <li><a href="../training/index.html">Training</a></li>
+                <li><a href="../bug/index.html">User Group</a></li>
+                <li><a href="../faq/index.html">FAQ</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Contents <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/index.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../software/index.html">Software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../profiling/index.html">Profiling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../training/index.html">Useful Training Material</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bug/index.html">Bede User Group</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li><a class="reference internal" href="#">Hardware</a></li>
+</ul>
+
+  <li>
+    <a href="../index.html" title="Previous Chapter: Bede Documentation"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Bede Documentation</span>
+    </a>
+  </li>
+  <li>
+    <a href="../usage/index.html" title="Next Chapter: Usage"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Usage &raquo;</span>
+    </a>
+  </li>
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
+      
+  <div class="section" id="hardware">
+<span id="id1"></span><h1>Hardware<a class="headerlink" href="#hardware" title="Permalink to this headline">¶</a></h1>
+<p>The system is based around the IBM POWER9 CPU and NVIDIA Tesla GPUs.
+Connectivity within a node is optimised by both the CPUs and GPUs being
+connected to an NVIDIA NVLink 2.0 bus, and outside of a node by a
+dual-rail Mellanox EDR InfiniBand interconnect allowing GPUDirect RDMA
+communications (direct memory transfers to/from GPU memory).</p>
+<p>Together with IBM’s software engineering, the POWER9 architecture is
+uniquely positioned for:</p>
+<ul class="simple">
+<li>Large memory GPU use, as the GPUs are able to access main system
+memory via POWER9’s large model feature.</li>
+<li>Multi node GPU use, via IBM’s Distributed Deep Learning (DDL)
+software.</li>
+</ul>
+<p>There are:</p>
+<ul class="simple">
+<li>2x “login” nodes, each containing:<ul>
+<li>2x POWER9 CPUs &#64; 2.4GHz (40 cores total and 4 hardware threads per
+core), with NVLink 2.0</li>
+<li>512GB DDR4 RAM</li>
+<li>4x Tesla V100 32G NVLink 2.0</li>
+<li>1x Mellanox EDR (100Gbit/s) InfiniBand port</li>
+</ul>
+</li>
+<li>32x “gpu” nodes, each containing:<ul>
+<li>2x POWER9 CPUs &#64; 2.7GHz (32 cores total and 4 hardware threads per
+core), with NVLink 2.0</li>
+<li>512GB DDR4 RAM</li>
+<li>4x Tesla V100 32G NVLink 2.0</li>
+<li>2x Mellanox EDR (100Gbit/s) InfiniBand ports</li>
+</ul>
+</li>
+<li>4x “infer” nodes, each containing:<ul>
+<li>2x POWER9 CPUs &#64; 2.9GHz (40 cores total and 4 hardware threads per
+core)</li>
+<li>256GB DDR4 RAM</li>
+<li>4x Tesla T4 16G PCIe</li>
+<li>1x Mellanox EDR (100Gbit/s) InfiniBand port</li>
+</ul>
+</li>
+</ul>
+<p>The Mellanox EDR InfiniBand interconnect is organised in a 2:1 block fat
+tree topology. GPUDirect RDMA transfers are supported on the 32 “gpu”
+nodes only, as this requires an InfiniBand port per POWER9 CPU socket.</p>
+<p>Storage is provided by a 2PB Lustre filesystem capable of reaching
+10GB/s read or write performance, supplemented by an NFS service
+providing modest home and project directory needs.</p>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+  <div data-ea-publisher>
+  </div>
+  
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/hardware/index.rst.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2020, N8 CIR.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.<br/>
+    </p>
+  </div>
+</footer>
+
+  </body>
+</html>

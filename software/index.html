@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Software &#8212; Bede Documentation  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Watson Machine Learning Community Edition resnet50 benchmark" href="resnet50/bede-README-sbatch.html" />
+    <link rel="prev" title="Usage" href="../usage/index.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+  </head>
+  <body role="document">
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html"><span><img src="../_static/logo-cmyk.png"></span>
+           </a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../hardware/index.html">Hardware</a></li>
+                <li><a href="#">Software</a></li>
+                <li><a href="../usage/index.html">Usage</a></li>
+                <li><a href="../profiling/index.html">Profiling</a></li>
+                <li><a href="../training/index.html">Training</a></li>
+                <li><a href="../bug/index.html">User Group</a></li>
+                <li><a href="../faq/index.html">FAQ</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Contents <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../hardware/index.html">Hardware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/index.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../profiling/index.html">Profiling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../training/index.html">Useful Training Material</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bug/index.html">Bede User Group</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li><a class="reference internal" href="#">Software</a><ul>
+<li><a class="reference internal" href="#environments">Environments</a><ul>
+<li><a class="reference internal" href="#spack">Spack</a></li>
+<li><a class="reference internal" href="#easybuild">Easybuild</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#compilers">Compilers</a><ul>
+<li><a class="reference internal" href="#gcc">GCC</a></li>
+<li><a class="reference internal" href="#llvm">LLVM</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#blas-lapack">BLAS/LAPACK</a></li>
+<li><a class="reference internal" href="#mpi">MPI</a></li>
+<li><a class="reference internal" href="#hdf5">HDF5</a></li>
+<li><a class="reference internal" href="#netcdf">NetCDF</a></li>
+<li><a class="reference internal" href="#python">Python</a><ul>
+<li><a class="reference internal" href="#pytorch-quickstart">PyTorch Quickstart</a></li>
+<li><a class="reference internal" href="#pytorch-and-tensorflow-ibm-powerai-and-wmlce-possibly-out-of-date">PyTorch and TensorFlow: IBM PowerAI and wmlce [Possibly Out of Date]</a></li>
+<li><a class="reference internal" href="#wmlce-resnet50-benchmark-possibly-out-of-date">WMLCE resnet50 benchmark [Possibly out of date]</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#initial-investigations-with-cuda-under-development">Initial investigations with CUDA (under development)</a></li>
+<li><a class="reference internal" href="#cryo-em-software-environment">Cryo-EM Software Environment</a></li>
+</ul>
+</li>
+</ul>
+
+  <li>
+    <a href="../usage/index.html" title="Previous Chapter: Usage"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Usage</span>
+    </a>
+  </li>
+  <li>
+    <a href="resnet50/bede-README-sbatch.html" title="Next Chapter: Watson Machine Learning Community Edition resnet50 benchmark"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Watson Machin... &raquo;</span>
+    </a>
+  </li>
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
+      
+  <div class="section" id="software">
+<h1>Software<a class="headerlink" href="#software" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="environments">
+<h2>Environments<a class="headerlink" href="#environments" title="Permalink to this headline">¶</a></h2>
+<p>The default software environment on Bede is called “builder”. This uses
+the modules system normally used on HPC systems, but provides a system
+of intelligent modules. To see a list of what is available, executing
+the command <code class="docutils literal"><span class="pre">module</span> <span class="pre">avail</span></code>.</p>
+<p>In this scheme, modules providing access to compilers and libraries
+examine other modules that are also loaded and make the most appropriate
+copy (or “flavour”) of the software available. This minimises the
+problem of knowing what modules to choose whilst providing access to all
+the combinations of how a library can be built.</p>
+<p>For example, the following command gives you access to a copy of FFTW
+3.3.8 that has been built against GCC 8.4.0:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ module load gcc/8.4.0 fftw/3.3.8
+$ which fftw-wisdom
+/opt/software/builder/developers/libraries/fftw/3.3.8/1/gcc-8.4.0/bin/fftw-wisdom
+</pre></div>
+</div>
+<p>If you then load an MPI library, your environment will be automatically
+updated to point at a copy of FFTW 3.3.8 that has been built against GCC
+8.4.0 and OpenMPI 4.0.5:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ module load openmpi/4.0.5
+$ which fftw-wisdom
+/opt/software/builder/developers/libraries/fftw/3.3.8/1/gcc-8.4.0-openmpi-4.0.5/bin/fftw-wisdom
+</pre></div>
+</div>
+<p>Similarly, if you then load CUDA, the MPI library will be replaced by
+one built against it:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ which mpirun
+/opt/software/builder/developers/libraries/openmpi/4.0.5/1/gcc-8.4.0/bin/mpirun
+$ module load cuda/10.2.89
+$ which mpirun
+/opt/software/builder/developers/libraries/openmpi/4.0.5/1/gcc-8.4.0-cuda-10.2.89/bin/mpirun
+</pre></div>
+</div>
+<p>Modules follow certain conventions:</p>
+<ul class="simple">
+<li>Logs of software builds can be found under <code class="docutils literal"><span class="pre">/opt/software/builder/logs/</span></code>.</li>
+<li>Installation recipes for modules can be found under directory <code class="docutils literal"><span class="pre">/home/builder/builder/</span></code>.</li>
+<li>Although modules do their best to configure your environment so
+that you can use the software, it is sometimes useful to know where the
+software is installed on disk. This is provided by the <code class="docutils literal"><span class="pre">&lt;NAME&gt;_HOME</span></code>
+environment variable, e.g. if the <code class="docutils literal"><span class="pre">gcc/8.4.0</span></code> module is loaded,
+environment variable <code class="docutils literal"><span class="pre">GCC_HOME</span></code> points to the directory containing
+its files.</li>
+<li>Software provided by modules sometimes use other modules for their
+functionality. It is not normally required to explicitly load
+these prerequisites but it can be useful, for example to mirror R&#8217;s
+buld environment when installing an R library. Where this occurs,
+a list of modules is provided by the <code class="docutils literal"><span class="pre">&lt;NAME&gt;_BUILD_MODULES</span></code>
+environment variable, e.g. the <code class="docutils literal"><span class="pre">r</span></code> module sets environment variable
+<code class="docutils literal"><span class="pre">R_BUILD_MODULES</span></code>.</li>
+</ul>
+<p>Software can be built on top of these modules in the following ways:</p>
+<ul class="simple">
+<li>Traditional - loading appropriate modules, manually unpacking,
+configuring, building and installing the new software
+(e.g.&nbsp;<code class="docutils literal"><span class="pre">./configure;</span> <span class="pre">make;</span> <span class="pre">make</span> <span class="pre">install</span></code>)</li>
+<li><a class="reference external" href="https://spack.readthedocs.io/">Spack</a> - automated method of
+installing software. Spack will automatically find the multiple
+flavours (or variants, in spack-speak) of libraries provided by
+builder, minimising the number of packages needing to be built.</li>
+</ul>
+<p>With Builder and Spack, the opportunity arises for a project to inherit
+and supplement software, and for users to then inherit and supplement
+that in turn. In this way, the centre can concentrate on providing core
+software of general use and allow projects and users to concentrate on
+specialist software elements that support their work.</p>
+<p>In addition, there are two other types of software environment on Bede,
+which are not currently recommended:</p>
+<ul class="simple">
+<li>The vendor-supplied set of modules that originally came with the
+machine. To use these, execute:
+<code class="docutils literal"><span class="pre">echo</span> <span class="pre">ocf</span> <span class="pre">&gt;</span> <span class="pre">~/.application_environment</span></code> and then login again.</li>
+<li>Easybuild - an automated method of installing software, rival to
+Spack. To use this, execute:
+<code class="docutils literal"><span class="pre">echo</span> <span class="pre">builder</span> <span class="pre">&gt;</span> <span class="pre">~/.application_environment</span></code> and then login again.</li>
+</ul>
+<p>In both cases, executing <code class="docutils literal"><span class="pre">rm</span> <span class="pre">~/.application_environment</span></code> and login
+again will return you to the default software environment.</p>
+<div class="section" id="spack">
+<h3>Spack<a class="headerlink" href="#spack" title="Permalink to this headline">¶</a></h3>
+<p>Spack can be used to extend the installed software on the system,
+without requiring specialist knowledge on how to build particular pieces
+of software. Documentation for the project is here:
+<a class="reference external" href="https://spack.readthedocs.io/">https://spack.readthedocs.io/</a></p>
+<p>To install spack, execute the following and then login again:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ git clone https://github.com/spack/spack.git $HOME/spack
+
+$ echo &#39;export SPACK_ROOT=$HOME/spack&#39; &gt;&gt; ~/.bash_profile
+$ echo &#39;source $SPACK_ROOT/share/spack/setup-env.sh&#39; &gt;&gt; ~/.bash_profile
+</pre></div>
+</div>
+<p>Example usage, installing an MPI aware, GPU version of gromacs and than
+loading it into your environment to use (once built, execute
+<code class="docutils literal"><span class="pre">spack</span> <span class="pre">load</span> <span class="pre">gromacs</span></code> before using):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ spack install gromacs +mpi +cuda
+</pre></div>
+</div>
+<p>Other useful spack commands: * <code class="docutils literal"><span class="pre">spack</span> <span class="pre">find</span></code> - show what packages have
+been installed * <code class="docutils literal"><span class="pre">spack</span> <span class="pre">list</span></code> - show what packages spack knows how to
+build * <code class="docutils literal"><span class="pre">spack</span> <span class="pre">compilers</span></code> - show what compilers spack can use *
+<code class="docutils literal"><span class="pre">spack</span> <span class="pre">info</span> <span class="pre">&lt;package&gt;</span></code> - details about a package, and the different
+ways it can be built * <code class="docutils literal"><span class="pre">spack</span> <span class="pre">spec</span> <span class="pre">&lt;package&gt;</span></code> - what pieces of
+software a package depends on</p>
+<p>If a project wishes to create a spack installation, for example under
+<code class="docutils literal"><span class="pre">/projects/&lt;project&gt;/spack</span></code> and you would like an easy way for your
+users to add it to their environment, please contact us and we can make
+a module.</p>
+<p>If you are a user who wishes to supplement your project’s spack
+installation, follow the installation instructions above and then tell
+it where your project’s copy of spack is:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>cat &gt; $SPACK_ROOT/etc/spack/upstreams.yaml &lt;&lt;EOF
+upstreams:
+  spack-central:
+    install_tree: /projects/&lt;project&gt;/spack
+    modules:
+      tcl: /projects/&lt;project&gt;/spack/share/spack/modules
+EOF
+</pre></div>
+</div>
+</div>
+<div class="section" id="easybuild">
+<h3>Easybuild<a class="headerlink" href="#easybuild" title="Permalink to this headline">¶</a></h3>
+<p>Not currently recommended.</p>
+<p>The central Easybuild modules are available when a user executes the
+following command and then logs in again:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">echo</span> <span class="n">easybuild</span> <span class="o">&gt;</span> <span class="o">~/.</span><span class="n">application_environment</span>
+</pre></div>
+</div>
+<p>A user can create their own Easybuild installation to supplement (or
+override) the packages provided by the central install by:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">echo</span> <span class="s1">&#39;export EASYBUILD_INSTALLPATH=$HOME/eb&#39;</span> <span class="o">&gt;&gt;</span> <span class="o">~/.</span><span class="n">bash_profile</span>
+<span class="n">echo</span> <span class="s1">&#39;export EASYBUILD_BUILDPATH=/tmp&#39;</span> <span class="o">&gt;&gt;</span> <span class="o">~/.</span><span class="n">bash_profile</span>
+<span class="n">echo</span> <span class="s1">&#39;export EASYBUILD_MODULES_TOOL=Lmod&#39;</span> <span class="o">&gt;&gt;</span> <span class="o">~/.</span><span class="n">bash_profile</span>
+<span class="n">echo</span> <span class="s1">&#39;export EASYBUILD_PARALLEL=8&#39;</span> <span class="o">&gt;&gt;</span> <span class="o">~/.</span><span class="n">bash_profile</span>
+<span class="n">echo</span> <span class="s1">&#39;export MODULEPATH=$HOME/eb/modules/all:$MODULEPATH&#39;</span> <span class="o">&gt;&gt;</span> <span class="o">~/.</span><span class="n">bash_profile</span>
+</pre></div>
+</div>
+<p>Login again, and then:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>wget https://raw.githubusercontent.com/easybuilders/easybuild-framework/develop/easybuild/scripts/bootstrap_eb.py
+python bootstrap_eb.py $EASYBUILD_INSTALLPATH
+</pre></div>
+</div>
+<p>Verify install by checking sensible output from:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">avail</span>   <span class="c1"># should show an EasyBuild module under user&#39;s home directory</span>
+<span class="n">module</span> <span class="n">load</span> <span class="n">EasyBuild</span>
+<span class="n">which</span> <span class="n">eb</span>       <span class="c1"># should show a path under the user&#39;s home directory</span>
+</pre></div>
+</div>
+<p>Software can now be installed into the new Easybuild area using
+<code class="docutils literal"><span class="pre">eb</span> <span class="pre">&lt;package&gt;</span></code></p>
+<p>Project Easybuild installations can be created using a similar method.
+In this case, a central module to add the project’s modules to a user’s
+environment is helpful, and can be done on request.</p>
+</div>
+</div>
+<div class="section" id="compilers">
+<h2>Compilers<a class="headerlink" href="#compilers" title="Permalink to this headline">¶</a></h2>
+<p>All compiler modules set the <code class="docutils literal"><span class="pre">CC</span></code>, <code class="docutils literal"><span class="pre">CXX</span></code>, <code class="docutils literal"><span class="pre">FC</span></code>, <code class="docutils literal"><span class="pre">F90</span></code> environment variables to appropriate values. These are commonly used by tools such as cmake and autoconf, so that by loading a compiler module its compilers are used by default.</p>
+<p>This can also be done in your own build scripts and make files. e.g.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>module load gcc
+$CC -o myprog myprog.c
+</pre></div>
+</div>
+<div class="section" id="gcc">
+<h3>GCC<a class="headerlink" href="#gcc" title="Permalink to this headline">¶</a></h3>
+<p>Note that the default GCC provided by Red Hat Enterprise Linux 7 (4.8.5)
+is quite old, will not optimise for the POWER9 processor (either use
+POWER8 tuning options or use a later compiler), and does not have
+CUDA/GPU offload support compiled in. The module <code class="docutils literal"><span class="pre">gcc/native</span></code> has been
+provided to point to this copy of GCC.</p>
+<p>The copies of GCC available as modules have been compiled with CUDA
+offload support:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">load</span> <span class="n">gcc</span><span class="o">/</span><span class="mf">10.2.0</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="llvm">
+<h3>LLVM<a class="headerlink" href="#llvm" title="Permalink to this headline">¶</a></h3>
+<p>LLVM has been provided for use on the system by the <code class="docutils literal"><span class="pre">llvm</span></code> module.
+It has been built with CUDA GPU offloading support, allowing OpenMP
+regions to run on a GPU using the <code class="docutils literal"><span class="pre">target</span></code> directive.</p>
+<p>Note that, as from LLVM 11.0.0, it provides a Fortran compiler called
+<code class="docutils literal"><span class="pre">flang</span></code>. Although this has been compiled and can be used for
+experimentation, it is still immature and ultimately relies on
+<code class="docutils literal"><span class="pre">gfortran</span></code> for its code generation. The <code class="docutils literal"><span class="pre">lvm/11.0.0</span></code> module therefore
+defaults to using the operating system provided <code class="docutils literal"><span class="pre">gfortran</span></code>, instead.</p>
+</div>
+</div>
+<div class="section" id="blas-lapack">
+<h2>BLAS/LAPACK<a class="headerlink" href="#blas-lapack" title="Permalink to this headline">¶</a></h2>
+<p>The following numerical libraries provide optimised CPU implementations of BLAS and LAPACK on the system:</p>
+<ul class="simple">
+<li>ESSL (IBM Engineering and Scientific Subroutine Library)</li>
+<li>OpenBLAS</li>
+</ul>
+<p>The modules for each of these libraries provide some convenience environment variables: <code class="docutils literal"><span class="pre">N8CIR_LINALG_CFLAGS</span></code> contains the compiler arguments to link BLAS and LAPACK to C code; <code class="docutils literal"><span class="pre">N8CIR_LINALG_FFLAGS</span></code> contains the same to link to Fortran. When used with variables such as <code class="docutils literal"><span class="pre">CC</span></code>, commands to build software can become entirely independent of what compilers and numerical libraries you have loaded, e.g.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>module load gcc essl/6.2
+$CC -o myprog myprog.c $N8CIR_LINALG_CFLAGS
+</pre></div>
+</div>
+</div>
+<div class="section" id="mpi">
+<h2>MPI<a class="headerlink" href="#mpi" title="Permalink to this headline">¶</a></h2>
+<p>The main supported MPI on the system is OpenMPI.</p>
+<p>For access to a cuda-enabled MPI: <code class="docutils literal"><span class="pre">module</span> <span class="pre">load</span> <span class="pre">gcc</span> <span class="pre">cuda</span> <span class="pre">openmpi</span></code></p>
+<p>We commit to the following convention for all MPIs we provide as modules:</p>
+<ul class="simple">
+<li>The wrapper to compile C programs is called <code class="docutils literal"><span class="pre">mpicc</span></code></li>
+<li>The wrapper to compile C++ programs is called <code class="docutils literal"><span class="pre">mpicxx</span></code></li>
+<li>The wrapper to compile Fortran programs is called <code class="docutils literal"><span class="pre">mpif90</span></code></li>
+</ul>
+</div>
+<div class="section" id="hdf5">
+<h2>HDF5<a class="headerlink" href="#hdf5" title="Permalink to this headline">¶</a></h2>
+<p>When loaded in conjunction with an MPI module such as <code class="docutils literal"><span class="pre">openmpi</span></code>, the
+<code class="docutils literal"><span class="pre">hdf5</span></code> module provides both the serial and parallel versions of the
+library. The parallel functionality relies on a technology called MPI-IO,
+which is currently subject to the following known issue on Bede:</p>
+<ul class="simple">
+<li>HDF5 does not pass all of its parallel tests with OpenMPI 4.x. If
+you are using this MPI and your application continues to run but does
+not return from a call to the HDF5 library, you may have hit a similar
+issue. The current workaround is to instruct OpenMPI to use an alternative
+MPI-IO implementation with the command: <code class="docutils literal"><span class="pre">export</span> <span class="pre">OMPI_MCA_io=ompio</span></code>
+The trade off is that, in some areas, this alternative is extremely slow
+and so should be used with caution.</li>
+</ul>
+</div>
+<div class="section" id="netcdf">
+<h2>NetCDF<a class="headerlink" href="#netcdf" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal"><span class="pre">netcdf</span></code> module provides the C, C++ and Fortran bindings for this
+file format library. When an MPI module is loaded, parallel support is
+enabled through the PnetCDF and HDF5 libraries.</p>
+<p>Use of NetCDF&#8217;s parallel functionality can use HDF5, and so is subject
+to its known issues on Bede (see above).</p>
+</div>
+<div class="section" id="python">
+<h2>Python<a class="headerlink" href="#python" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="pytorch-quickstart">
+<h3>PyTorch Quickstart<a class="headerlink" href="#pytorch-quickstart" title="Permalink to this headline">¶</a></h3>
+<p>The following should get you set up with a working conda environment (replacing &lt;project&gt; with your project code):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>export DIR=/nobackup/projects/&lt;project&gt;/$USER
+# rm -rf ~/.conda .condarc $DIR/miniconda # Uncomment if you want to remove old env
+mkdir $DIR
+pushd $DIR
+
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-ppc64le.sh
+
+sh Miniconda3-latest-Linux-ppc64le.sh -b -p $DIR/miniconda
+source miniconda/bin/activate
+conda update conda -y
+conda config --set channel_priority strict
+
+conda config --prepend channels \
+        https://public.dhe.ibm.com/ibmdl/export/pub/software/server/ibm-ai/conda/
+
+conda config --prepend channels \
+        https://opence.mit.edu
+
+conda create --name opence pytorch=1.7.1 -y
+conda activate opence
+</pre></div>
+</div>
+<p>This has some limitations such as not supporting large model support. If you require this you can try the instructions below, these provide an older version of PyTorch however.</p>
+</div>
+<div class="section" id="pytorch-and-tensorflow-ibm-powerai-and-wmlce-possibly-out-of-date">
+<h3>PyTorch and TensorFlow: IBM PowerAI and wmlce [Possibly Out of Date]<a class="headerlink" href="#pytorch-and-tensorflow-ibm-powerai-and-wmlce-possibly-out-of-date" title="Permalink to this headline">¶</a></h3>
+<p>IBM have done a lot of work to port common Machine Learning tools to the
+POWER9 system, and to take advantage of the GPUs abililty to directly
+access main system memory on the POWER9 architecture using its “Large
+Model Support”.</p>
+<p>This has been packaged up into what is variously known as IBM Watson
+Machine Learning Community Edition (wmlce) or the catchier name PowerAI.</p>
+<p>Documentation on wmlce can be found here:
+<a class="reference external" href="https://www.ibm.com/support/pages/get-started-ibm-wml-ce">https://www.ibm.com/support/pages/get-started-ibm-wml-ce</a></p>
+<p>Installation is via the IBM channel of the anaconda package management tool. <strong>Note:
+if you do not use this channel you will not find all of the available packages.</strong>
+First install anaconda (can be quite large - so using the /nobackup area):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">/</span><span class="n">nobackup</span><span class="o">/</span><span class="n">projects</span><span class="o">/&lt;</span><span class="n">project</span><span class="o">&gt;</span>
+
+<span class="n">wget</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">repo</span><span class="o">.</span><span class="n">anaconda</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">miniconda</span><span class="o">/</span><span class="n">Miniconda3</span><span class="o">-</span><span class="n">latest</span><span class="o">-</span><span class="n">Linux</span><span class="o">-</span><span class="n">ppc64le</span><span class="o">.</span><span class="n">sh</span>
+<span class="n">sh</span> <span class="n">Miniconda3</span><span class="o">-</span><span class="n">latest</span><span class="o">-</span><span class="n">Linux</span><span class="o">-</span><span class="n">ppc64le</span><span class="o">.</span><span class="n">sh</span>
+<span class="n">conda</span> <span class="n">update</span> <span class="n">conda</span>
+<span class="n">conda</span> <span class="n">config</span> <span class="o">--</span><span class="nb">set</span> <span class="n">channel_priority</span> <span class="n">strict</span>
+<span class="n">conda</span> <span class="n">config</span> <span class="o">--</span><span class="n">prepend</span> <span class="n">channels</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">public</span><span class="o">.</span><span class="n">dhe</span><span class="o">.</span><span class="n">ibm</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ibmdl</span><span class="o">/</span><span class="n">export</span><span class="o">/</span><span class="n">pub</span><span class="o">/</span><span class="n">software</span><span class="o">/</span><span class="n">server</span><span class="o">/</span><span class="n">ibm</span><span class="o">-</span><span class="n">ai</span><span class="o">/</span><span class="n">conda</span><span class="o">/</span>
+<span class="n">conda</span> <span class="n">create</span> <span class="o">--</span><span class="n">name</span> <span class="n">wmlce</span>
+</pre></div>
+</div>
+<p>Then login again and install wmlce (GPU version by default - substitute
+<code class="docutils literal"><span class="pre">powerai-cpu</span></code> for <code class="docutils literal"><span class="pre">powerai</span></code> for the CPU version):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">activate</span> <span class="n">wmlce</span>
+<span class="n">conda</span> <span class="n">install</span> <span class="n">powerai</span> <span class="n">ipython</span>
+</pre></div>
+</div>
+<p>Running <code class="docutils literal"><span class="pre">ipython</span></code> on the login node will then allow you to experiment
+with this feature using an interactive copy of Python and the GPUs on
+the login node. Demanding work should be packaged into a job and
+launched with the <code class="docutils literal"><span class="pre">python</span></code> command.</p>
+<p>If a single node with 4 GPUs and 512GB RAM isn&#8217;t enough, the Distributed
+Deep Learning feature of PowerAI should allow you to write code that can
+take advantage of multiple nodes.</p>
+</div>
+<div class="section" id="wmlce-resnet50-benchmark-possibly-out-of-date">
+<h3>WMLCE resnet50 benchmark [Possibly out of date]<a class="headerlink" href="#wmlce-resnet50-benchmark-possibly-out-of-date" title="Permalink to this headline">¶</a></h3>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="resnet50/bede-README-sbatch.html">Watson Machine Learning Community Edition resnet50 benchmark</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="section" id="initial-investigations-with-cuda-under-development">
+<h2>Initial investigations with CUDA (under development)<a class="headerlink" href="#initial-investigations-with-cuda-under-development" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="wanderings/wanderings-in-CUDALand.html">Wanderings in CUDA land - Exploring parallel computing with CUDA</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="wanderings/wanderings-in-CUDALand.html#some-background-terminology">Some background terminology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wanderings/wanderings-in-CUDALand.html#a-getting-started-example">A getting started example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wanderings/wanderings-in-CUDALand.html#looking-more-carefully-at-unified-memory">Looking more carefully at unified memory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wanderings/wanderings-in-CUDALand.html#putting-the-pieces-together">Putting the pieces together</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wanderings/wanderings-in-CUDALand.html#future-work">Future Work</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="wanderings/Estimating-pi-in-CUDALand.html">Classical introduction to parallel computing - estimating pi in CUDA</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="wanderings/Estimating-pi-in-CUDALand.html#an-easy-introduction-to-parallel-computing">An easy introduction to parallel computing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wanderings/Estimating-pi-in-CUDALand.html#moving-onto-faster-but-still-parallel-approximations">Moving onto faster but still parallel approximations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wanderings/Estimating-pi-in-CUDALand.html#follow-up-work">Follow-up work</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="cryo-em-software-environment">
+<h2>Cryo-EM Software Environment<a class="headerlink" href="#cryo-em-software-environment" title="Permalink to this headline">¶</a></h2>
+<p>Documentation on the the Cryo-EM Software Environment for Life Sciences is available <a class="reference download internal" href="../_downloads/Cryo-EM_Bede.pdf" download=""><code class="xref download docutils literal"><span class="pre">here</span></code></a>. Note that this document is mainly based on the installation on <a class="reference external" href="https://mit-satori.github.io">Satori</a> and might have some inconsistencies with the Bede installation.</p>
+<p>To use the modules, execute</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">activate</span> <span class="o">/</span><span class="n">projects</span><span class="o">/</span><span class="n">bddir04</span><span class="o">/</span><span class="n">ibm</span><span class="o">-</span><span class="n">lfsapp</span><span class="o">/</span><span class="n">CryoEM</span>
+</pre></div>
+</div>
+<p>with a working conda installation.</p>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+  <div data-ea-publisher>
+  </div>
+  
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/software/index.rst.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2020, N8 CIR.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.<br/>
+    </p>
+  </div>
+</footer>
+
+  </body>
+</html>
