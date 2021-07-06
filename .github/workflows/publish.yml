@@ -26,11 +26,6 @@ jobs:
       - name: "Build docs"
         run: |
           sphinx-build -W . ./html
-      - name: Archive built docs
-        uses: actions/upload-artifact@v2
-        with:
-          name: docs
-          path: html
       # Deploy the documentation to the gh-pages branch of this repository.
       # If using a custom domain, the cname option should be specified
       # note that the gh-pages branch may need to exist prior to the first run of this action (with no parent commit)
@@ -39,4 +34,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: html
-          # cname: 
+          cname: ptheywood.uk
